@@ -46,8 +46,13 @@ export const AppRoutes: React.FC = () => {
           {/* Organization Submenu Items */}
           <Route path="/organizations/360" element={<Organization360Page />} />
           <Route path="/organizations/partner-detail" element={<PartnerDetailPage />} />
+          <Route path="/organizations/partner-detail/:org_id" element={<PartnerDetailPage />} />
           <Route path="/organizations/360/:id" element={<PartnerDetailPage />} />
+          <Route path="/organizations/:org_id" element={<PartnerDetailPage />} />
+          <Route path="/organizations/:org_id/locations" element={<PartnerDetailPage />} />
+          <Route path="/partners/:org_id" element={<PartnerDetailPage />} />
           <Route path="/partner-detail" element={<PartnerDetailPage />} />
+          <Route path="/partner-detail/:org_id" element={<PartnerDetailPage />} />
           <Route path="/brands" element={<DomainPlaceholderPage />} />
           <Route path="/locations" element={<DomainPlaceholderPage />} />
           <Route path="/departments" element={<DomainPlaceholderPage />} />

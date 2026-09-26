@@ -79,3 +79,53 @@ export interface PaginatedOrganizationsResponse {
   organizations: Organization[];
   pagination: Pagination;
 }
+
+export interface LocationItem {
+  id: string;
+  org_id: string;
+  name: string;
+  area?: string | null;
+  code?: string | null;
+  type: string;
+  status: "Active" | "Pending" | "Inactive" | "Draft" | string;
+  time_zone?: string;
+  timeZone?: string;
+  currency?: string;
+  last_sync?: string;
+  lastSync?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CreateLocationPayload {
+  name: string;
+  area?: string | null;
+  code?: string | null;
+  type?: string;
+  status?: string;
+  timeZone?: string;
+  time_zone?: string;
+  currency?: string;
+}
+
+export interface UpdateLocationPayload {
+  name?: string;
+  area?: string | null;
+  code?: string | null;
+  type?: string;
+  status?: string;
+  timeZone?: string;
+  time_zone?: string;
+  currency?: string;
+}
+
+export interface PaginatedLocationsResponse {
+  message: string;
+  locations: LocationItem[];
+  organization?: {
+    id: string;
+    business_name: string;
+    domain: string;
+  };
+  pagination: Pagination;
+}

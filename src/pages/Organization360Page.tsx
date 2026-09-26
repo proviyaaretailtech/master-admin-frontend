@@ -555,7 +555,7 @@ export const Organization360Page: React.FC = () => {
                 <div className="w-full md:w-[195px] flex items-center md:justify-end gap-2">
                   <button
                     type="button"
-                    onClick={() => navigate("/organizations/partner-detail")}
+                    onClick={() => navigate(`/organizations/${item.id}`)}
                     className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
                   >
                     View
@@ -563,7 +563,7 @@ export const Organization360Page: React.FC = () => {
 
                   <button
                     type="button"
-                    onClick={() => navigate("/organizations/partner-detail")}
+                    onClick={() => navigate(`/organizations/${item.id}`)}
                     className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
                   >
                     Review
