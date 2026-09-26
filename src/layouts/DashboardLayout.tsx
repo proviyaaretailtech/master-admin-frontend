@@ -1,0 +1,485 @@
+import React, { useState, useRef, useEffect } from "react";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/use-auth";
+import {
+  Store,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  User as UserIcon,
+  LogOut,
+  Building2,
+  ShieldCheck,
+  Landmark,
+  Layers,
+  ShoppingCart,
+  Package,
+  Truck,
+  BarChart3,
+  Sliders,
+  Headphones,
+  Code2,
+  FileCheck,
+  ArrowLeft,
+  LayoutDashboard,
+  Menu,
+  X,
+} from "lucide-react";
+
+export const DashboardLayout: React.FC = () => {
+  const { user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Navigation active detections
+  const isAccessControlActive =
+    location.pathname === "/users" || location.pathname.startsWith("/access-control");
+
+  // State
+  const [isOnlineAccepting, setIsOnlineAccepting] = useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isOrganizationExpanded, setIsOrganizationExpanded] = useState(!isAccessControlActive);
+  const [isAccessControlExpanded, setIsAccessControlExpanded] = useState(isAccessControlActive);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Update expansion when location changes
+  useEffect(() => {
+    if (isAccessControlActive) {
+      setIsAccessControlExpanded(true);
+    }
+    if (
+      location.pathname.startsWith("/organizations") ||
+      location.pathname === "/dashboard" ||
+      location.pathname === "/" ||
+      location.pathname === "/brands" ||
+      location.pathname === "/locations" ||
+      location.pathname === "/departments" ||
+      location.pathname === "/employees" ||
+      location.pathname === "/invitations"
+    ) {
+      setIsOrganizationExpanded(true);
+    }
+    setIsMobileSidebarOpen(false);
+  }, [location.pathname, isAccessControlActive]);
+
+  const handleSignOut = async () => {
+    setIsDropdownOpen(false);
+    await logout();
+    navigate("/login");
+  };
+
+  const displayName = user ? `${user.first_name} ${user.last_name}` : "John Doe";
+  const displayEmail = user?.email || "john.doe@proviyaa.com";
+
+  // Navigation Items: Organization
+  const organizationSubItems = [
+    { name: "Organizations", path: "/dashboard" },
+    { name: "Organization 360", path: "/organizations/360" },
+    { name: "Brands", path: "/brands" },
+    { name: "Locations", path: "/locations" },
+    { name: "Departments", path: "/departments" },
+    { name: "Employees", path: "/employees" },
+    { name: "Invitations", path: "/invitations" },
+  ];
+
+  // Navigation Items: Access Control (Users page moved here!)
+  const accessControlSubItems = [
+    { name: "Users", path: "/users" },
+    { name: "Roles & Permissions", path: "/access-control/roles" },
+    { name: "Security Policies", path: "/access-control/policies" },
+    { name: "Audit Logs", path: "/access-control/audit-logs" },
+  ];
+
+  // Other System Domains
+  const systemDomains = [
+    { name: "Commercials", icon: Landmark, path: "/commercials" },
+    { name: "Platform Core", icon: Layers, path: "/platform-core" },
+    { name: "Commerce Engine", icon: ShoppingCart, path: "/commerce-engine" },
+    { name: "Inventory Supply", icon: Package, path: "/inventory-supply" },
+    { name: "Fulfilment", icon: Truck, path: "/fulfilment" },
+    { name: "Intelligence", icon: BarChart3, path: "/intelligence" },
+    { name: "Operations", icon: Sliders, path: "/operations" },
+    { name: "Support", icon: Headphones, path: "/support" },
+    { name: "Developer", icon: Code2, path: "/developer" },
+    { name: "Audit", icon: FileCheck, path: "/audit" },
+  ];
+
+  return (
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F8F9FA] font-sans antialiased text-slate-800">
+      {/* Mobile Backdrop */}
+      {isMobileSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden backdrop-blur-xs"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* ============================================================== */}
+      {/* 1. LEFT SIDEBAR (FULL HEIGHT FROM TOP OF VIEWPORT TO BOTTOM)   */}
+      {/* ============================================================== */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col justify-between transition-transform duration-200 ease-in-out md:static md:translate-x-0 shrink-0 ${
+          isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Top Brand Logo Header (Aligned with right TopBar h-16) */}
+        <div className="h-16 shrink-0 flex items-center justify-between px-5 border-b border-slate-200">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#65D000] flex items-center justify-center text-white font-extrabold text-lg shadow-sm shrink-0">
+              <span>P</span>
+            </div>
+            <div className="leading-tight">
+              <div className="font-extrabold text-slate-900 text-base tracking-tight">Proviyaa</div>
+              <div className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">
+                MASTER ADMIN PANEL
+              </div>
+            </div>
+          </div>
+
+          {/* Close button for mobile */}
+          <button
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Scrollable Navigation Area */}
+        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-4">
+          {/* OVERVIEW SECTION */}
+          <div>
+            <div className="px-2.5 pb-1.5 text-[10px] uppercase font-bold tracking-wider text-slate-400">
+              OVERVIEW
+            </div>
+            <Link
+              to="/dashboard"
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                location.pathname === "/overview"
+                  ? "bg-[#65D000]/15 text-[#429300]"
+                  : "text-slate-600 hover:bg-slate-100/70"
+              }`}
+            >
+              <LayoutDashboard className="w-4 h-4 text-slate-500" />
+              <span>Dashboard</span>
+            </Link>
+          </div>
+
+          {/* SYSTEM DOMAINS SECTION */}
+          <div className="space-y-1">
+            <div className="px-2.5 pb-1.5 text-[10px] uppercase font-bold tracking-wider text-slate-400">
+              SYSTEM DOMAINS
+            </div>
+
+            {/* 1. Organization Section (Collapsible Dropdown Menu) */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setIsOrganizationExpanded(!isOrganizationExpanded)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  location.pathname === "/dashboard" ||
+                  location.pathname === "/" ||
+                  location.pathname.startsWith("/organizations") ||
+                  location.pathname === "/brands" ||
+                  location.pathname === "/locations" ||
+                  location.pathname === "/departments" ||
+                  location.pathname === "/employees" ||
+                  location.pathname === "/invitations"
+                    ? "bg-[#EEF9E8] text-[#3E8800]"
+                    : "text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Building2
+                    className={`w-4 h-4 ${
+                      location.pathname === "/dashboard" ||
+                      location.pathname === "/" ||
+                      location.pathname.startsWith("/organizations")
+                        ? "text-[#4FA800]"
+                        : "text-slate-500"
+                    }`}
+                  />
+                  <span>Organization</span>
+                </div>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    isOrganizationExpanded ? "rotate-0 text-[#4FA800]" : "-rotate-90 text-slate-400"
+                  }`}
+                />
+              </button>
+
+              {/* Organization Submenu Items */}
+              {isOrganizationExpanded && (
+                <div className="mt-1 ml-5 pl-2 border-l border-slate-200/80 space-y-0.5">
+                  {organizationSubItems.map((sub) => {
+                    const isActive =
+                      location.pathname === sub.path ||
+                      (sub.path === "/dashboard" &&
+                        (location.pathname === "/" || location.pathname === "/organizations"));
+                    return (
+                      <Link
+                        key={sub.name}
+                        to={sub.path}
+                        className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                          isActive
+                            ? "bg-[#DEF5CE] text-[#337400] font-bold"
+                            : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium"
+                        }`}
+                      >
+                        {sub.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* 2. Access Control Section (Contains Users Page!) */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setIsAccessControlExpanded(!isAccessControlExpanded)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  isAccessControlActive
+                    ? "bg-[#EEF9E8] text-[#3E8800]"
+                    : "text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <ShieldCheck
+                    className={`w-4 h-4 ${isAccessControlActive ? "text-[#4FA800]" : "text-slate-500"}`}
+                  />
+                  <span>Access Control</span>
+                </div>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    isAccessControlExpanded
+                      ? "rotate-0 text-[#4FA800]"
+                      : "-rotate-90 text-slate-400"
+                  }`}
+                />
+              </button>
+
+              {/* Access Control Submenu Items (Users moved here!) */}
+              {isAccessControlExpanded && (
+                <div className="mt-1 ml-5 pl-2 border-l border-slate-200/80 space-y-0.5">
+                  {accessControlSubItems.map((sub) => {
+                    const isActive =
+                      location.pathname === sub.path ||
+                      (sub.path === "/users" &&
+                        (location.pathname === "/access-control" ||
+                          location.pathname === "/access-control/users"));
+                    return (
+                      <Link
+                        key={sub.name}
+                        to={sub.path}
+                        className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                          isActive
+                            ? "bg-[#DEF5CE] text-[#337400] font-bold"
+                            : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium"
+                        }`}
+                      >
+                        {sub.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* 3. Other System Domains */}
+            {systemDomains.map((domain) => {
+              const IconComponent = domain.icon;
+              const isActive = location.pathname === domain.path;
+              return (
+                <Link
+                  key={domain.name}
+                  to={domain.path}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
+                    isActive
+                      ? "bg-[#EEF9E8] text-[#3E8800]"
+                      : "text-slate-600 hover:bg-slate-100/70"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <IconComponent className="w-4 h-4 text-slate-500" />
+                    <span>{domain.name}</span>
+                  </div>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Bottom Sidebar: Back to Home */}
+        <div className="p-3 border-t border-slate-200 bg-white">
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 text-slate-500" />
+            <span>Back to Home</span>
+          </Link>
+        </div>
+      </aside>
+
+      {/* ============================================================== */}
+      {/* 2. RIGHT COLUMN: TOP BAR + MAIN CONTENT OUTLET                  */}
+      {/* ============================================================== */}
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
+        {/* ============================================================ */}
+        {/* TOP BAR (Header sits to the right of the sidebar)            */}
+        {/* ============================================================ */}
+        <header className="h-16 shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 shadow-2xs z-30">
+          {/* Left side of Top Bar */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Mobile Hamburger toggle */}
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer"
+              aria-label="Toggle menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            {/* Super Admin PANEL Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50/80 text-xs font-semibold text-slate-800 shadow-2xs">
+              <Store className="w-4 h-4 text-slate-600" />
+              <span className="hidden sm:inline">Super Admin PANEL</span>
+              <span className="sm:hidden">Admin</span>
+            </div>
+
+            {/* Open / Accepting Online Toggle */}
+            <div className="flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => setIsOnlineAccepting(!isOnlineAccepting)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  isOnlineAccepting ? "bg-[#65D000]" : "bg-slate-300"
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                    isOnlineAccepting ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+              <span className="text-xs font-semibold text-slate-700 hidden lg:inline">
+                {isOnlineAccepting ? "Open / Accepting Online" : "Closed / Offline"}
+              </span>
+            </div>
+          </div>
+
+          {/* Right side of Top Bar */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Search bar */}
+            <div className="relative hidden md:block w-60 lg:w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Order, KOT, bill, table..."
+                className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-xl border border-slate-200 bg-slate-50/60 focus:bg-white focus:border-[#65D000] focus:ring-1 focus:ring-[#65D000]/20 transition-all outline-none placeholder:text-slate-400"
+              />
+            </div>
+
+            {/* ONLINE Status Badge */}
+            <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#EBF9E5] text-[#4FA800] border border-[#C6EEB2]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4FA800] animate-pulse" />
+              <span>ONLINE</span>
+            </div>
+
+            {/* User Account Trigger & Dropdown Menu */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center gap-2.5 p-1 sm:p-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer outline-none"
+              >
+                {/* Avatar Photo / Initials */}
+                <div className="w-9 h-9 rounded-full bg-[#65D000]/20 text-[#54a800] border border-[#65D000]/40 flex items-center justify-center font-bold text-xs shadow-2xs overflow-hidden">
+                  <span className="tracking-tight">
+                    {user ? `${user.first_name[0] || ""}${user.last_name[0] || ""}` : "JD"}
+                  </span>
+                </div>
+
+                {/* Name & Role Text */}
+                <div className="hidden text-left sm:block">
+                  <div className="text-xs font-bold text-slate-900 leading-tight">
+                    {displayName}
+                  </div>
+                  <div className="text-[11px] text-slate-400 leading-tight">Super Admin</div>
+                </div>
+
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+                    isDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {/* Account Dropdown Card (matching screenshot 2) */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white p-4 shadow-xl border border-slate-100 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  {/* User Info Header */}
+                  <div className="px-1 py-1">
+                    <div className="font-bold text-sm text-slate-900 leading-snug">
+                      {displayName}
+                    </div>
+                    <div className="text-xs text-slate-400 truncate mt-0.5">{displayEmail}</div>
+                  </div>
+
+                  <div className="my-2.5 border-t border-slate-100" />
+
+                  {/* Navigation: My Profile */}
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="flex items-center gap-3 px-2 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                  >
+                    <UserIcon className="w-4 h-4 text-slate-500" />
+                    <span>My Profile</span>
+                  </Link>
+
+                  <div className="my-2 border-t border-slate-100" />
+
+                  {/* Action: Sign Out */}
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    className="w-full flex items-center gap-3 px-2 py-2 rounded-xl text-xs font-semibold text-[#EF4444] hover:bg-red-50/70 transition-colors cursor-pointer text-left"
+                  >
+                    <LogOut className="w-4 h-4 text-[#EF4444]" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+
+        {/* ============================================================ */}
+        {/* MAIN SCROLLABLE CONTENT OUTLET                               */}
+        {/* ============================================================ */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#F8F9FA]">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+};
