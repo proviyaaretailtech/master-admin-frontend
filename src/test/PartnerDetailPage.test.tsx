@@ -34,13 +34,13 @@ describe("PartnerDetailPage Component", () => {
     expect(screen.getByText("Review & Submit")).toBeInTheDocument();
   });
 
-  it("renders review lifecycle action with only Delete Partner button", () => {
+  it("renders review lifecycle action buttons with design placeholders and functional Delete Partner", () => {
     renderComponent();
 
+    expect(screen.getByRole("button", { name: /^Approve$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Reject$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Mark under review$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^Delete Partner$/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /^Approve$/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /^Reject$/i })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /^Mark under review$/i })).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /^Show\/Create password$/i })
     ).not.toBeInTheDocument();

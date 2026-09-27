@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/use-auth";
+import { usePermissions } from "../hooks/use-permissions";
 import {
   Store,
   Search,
@@ -28,12 +29,19 @@ import {
 
 export const DashboardLayout: React.FC = () => {
   const { user, logout } = useAuth();
+  const { can, roleName } = usePermissions();
   const location = useLocation();
   const navigate = useNavigate();
 
   // Navigation active detections
   const isAccessControlActive =
-    location.pathname === "/users" || location.pathname.startsWith("/access-control");
+    location.pathname === "/users" ||
+    location.pathname.startsWith("/access-control") ||
+    location.pathname === "/security-policies" ||
+    location.pathname === "/policies" ||
+    location.pathname === "/roles" ||
+    location.pathname === "/roles-permissions" ||
+    location.pathname === "/security-templates";
 
   // State
   const [isOnlineAccepting, setIsOnlineAccepting] = useState(true);
@@ -85,24 +93,25 @@ export const DashboardLayout: React.FC = () => {
   const displayName = user ? `${user.first_name} ${user.last_name}` : "John Doe";
   const displayEmail = user?.email || "john.doe@proviyaa.com";
 
-  // Navigation Items: Organization
+  // Navigation Items: Organization (filtered by permissions)
   const organizationSubItems = [
-    { name: "Organizations", path: "/dashboard" },
-    { name: "Organization 360", path: "/organizations/360" },
-    { name: "Brands", path: "/brands" },
-    { name: "Locations", path: "/locations" },
-    { name: "Departments", path: "/departments" },
-    { name: "Employees", path: "/employees" },
-    { name: "Invitations", path: "/invitations" },
-  ];
+    { name: "Organizations", path: "/dashboard", visible: true },
+    { name: "Organization 360", path: "/organizations/360", visible: can("feat_org_360", "view_directory") },
+    { name: "Brands", path: "/brands", visible: true },
+    { name: "Locations", path: "/locations", visible: can("feat_partner_locations", "view_locations") },
+    { name: "Departments", path: "/departments", visible: true },
+    { name: "Employees", path: "/employees", visible: true },
+    { name: "Invitations", path: "/invitations", visible: true },
+  ].filter((item) => item.visible);
 
-  // Navigation Items: Access Control (Users page moved here!)
+  // Navigation Items: Access Control (filtered by permissions)
   const accessControlSubItems = [
-    { name: "Users", path: "/users" },
-    { name: "Roles & Permissions", path: "/access-control/roles" },
-    { name: "Security Policies", path: "/access-control/policies" },
-    { name: "Audit Logs", path: "/access-control/audit-logs" },
-  ];
+    { name: "Users", path: "/users", visible: can("feat_users_mgmt", "view_users") },
+    { name: "Roles & Permissions", path: "/access-control/roles", visible: can("feat_roles_templates", "view_roles") },
+    { name: "Security Policies", path: "/access-control/policies", visible: can("feat_roles_templates", "view_roles") },
+    { name: "Audit Logs", path: "/access-control/audit-logs", visible: can("feat_audit_compliance", "view_audit_logs") },
+  ].filter((item) => item.visible);
+
 
   // Other System Domains
   const systemDomains = [
@@ -249,57 +258,67 @@ export const DashboardLayout: React.FC = () => {
             </div>
 
             {/* 2. Access Control Section (Contains Users Page!) */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setIsAccessControlExpanded(!isAccessControlExpanded)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
-                  isAccessControlActive
-                    ? "bg-[#EEF9E8] text-[#3E8800]"
-                    : "text-slate-700 hover:bg-slate-50"
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <ShieldCheck
-                    className={`w-4 h-4 ${isAccessControlActive ? "text-[#4FA800]" : "text-slate-500"}`}
-                  />
-                  <span>Access Control</span>
-                </div>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    isAccessControlExpanded
-                      ? "rotate-0 text-[#4FA800]"
-                      : "-rotate-90 text-slate-400"
+            {accessControlSubItems.length > 0 && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setIsAccessControlExpanded(!isAccessControlExpanded)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                    isAccessControlActive
+                      ? "bg-[#EEF9E8] text-[#3E8800]"
+                      : "text-slate-700 hover:bg-slate-50"
                   }`}
-                />
-              </button>
+                >
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck
+                      className={`w-4 h-4 ${isAccessControlActive ? "text-[#4FA800]" : "text-slate-500"}`}
+                    />
+                    <span>Access Control</span>
+                  </div>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      isAccessControlExpanded
+                        ? "rotate-0 text-[#4FA800]"
+                        : "-rotate-90 text-slate-400"
+                    }`}
+                  />
+                </button>
 
-              {/* Access Control Submenu Items (Users moved here!) */}
-              {isAccessControlExpanded && (
-                <div className="mt-1 ml-5 pl-2 border-l border-slate-200/80 space-y-0.5">
-                  {accessControlSubItems.map((sub) => {
-                    const isActive =
-                      location.pathname === sub.path ||
-                      (sub.path === "/users" &&
-                        (location.pathname === "/access-control" ||
-                          location.pathname === "/access-control/users"));
-                    return (
-                      <Link
-                        key={sub.name}
-                        to={sub.path}
-                        className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${
-                          isActive
-                            ? "bg-[#DEF5CE] text-[#337400] font-bold"
-                            : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium"
-                        }`}
-                      >
-                        {sub.name}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                {/* Access Control Submenu Items (Users moved here!) */}
+                {isAccessControlExpanded && (
+                  <div className="mt-1 ml-5 pl-2 border-l border-slate-200/80 space-y-0.5">
+                    {accessControlSubItems.map((sub) => {
+                      const isActive =
+                        location.pathname === sub.path ||
+                        (sub.path === "/users" &&
+                          (location.pathname === "/access-control" ||
+                            location.pathname === "/access-control/users")) ||
+                        (sub.path === "/access-control/policies" &&
+                          (location.pathname === "/policies" ||
+                            location.pathname === "/security-policies")) ||
+                        (sub.path === "/access-control/roles" &&
+                          (location.pathname === "/roles" ||
+                            location.pathname === "/roles-permissions" ||
+                            location.pathname === "/security-templates"));
+                      return (
+                        <Link
+                          key={sub.name}
+                          to={sub.path}
+                          className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                            isActive
+                              ? "bg-[#DEF5CE] text-[#337400] font-bold"
+                              : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium"
+                          }`}
+                        >
+                          {sub.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
 
             {/* 3. Other System Domains */}
             {systemDomains.map((domain) => {
@@ -357,11 +376,11 @@ export const DashboardLayout: React.FC = () => {
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Super Admin PANEL Badge */}
+            {/* Role / PANEL Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50/80 text-xs font-semibold text-slate-800 shadow-2xs">
               <Store className="w-4 h-4 text-slate-600" />
-              <span className="hidden sm:inline">Super Admin PANEL</span>
-              <span className="sm:hidden">Admin</span>
+              <span className="hidden sm:inline">{roleName.toUpperCase()} PANEL</span>
+              <span className="sm:hidden">{roleName}</span>
             </div>
 
             {/* Open / Accepting Online Toggle */}
@@ -423,7 +442,7 @@ export const DashboardLayout: React.FC = () => {
                   <div className="text-xs font-bold text-slate-900 leading-tight">
                     {displayName}
                   </div>
-                  <div className="text-[11px] text-slate-400 leading-tight">Super Admin</div>
+                  <div className="text-[11px] text-slate-400 leading-tight">{roleName}</div>
                 </div>
 
                 <ChevronDown

@@ -7,9 +7,13 @@ import { ProfilePage } from "../pages/ProfilePage";
 import { UsersManagementPage } from "../pages/UsersManagementPage";
 import { Organization360Page } from "../pages/Organization360Page";
 import { PartnerDetailPage } from "../pages/PartnerDetailPage";
+import { RolesPermissionsPage } from "../pages/RolesPermissionsPage";
+import { SecurityPoliciesPage } from "../pages/SecurityPoliciesPage";
 import { DomainPlaceholderPage } from "../pages/DomainPlaceholderPage";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { ProtectedRoute } from "../components/common/ProtectedRoute";
+
+import { PermissionRoute } from "../components/common/PermissionRoute";
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -36,15 +40,108 @@ export const AppRoutes: React.FC = () => {
           <Route path="/profile" element={<ProfilePage />} />
 
           {/* Access Control: Users Management (System Accounts) */}
-          <Route path="/users" element={<UsersManagementPage />} />
-          <Route path="/access-control" element={<UsersManagementPage />} />
-          <Route path="/access-control/users" element={<UsersManagementPage />} />
-          <Route path="/access-control/roles" element={<DomainPlaceholderPage />} />
-          <Route path="/access-control/policies" element={<DomainPlaceholderPage />} />
-          <Route path="/access-control/audit-logs" element={<DomainPlaceholderPage />} />
+          <Route
+            path="/users"
+            element={
+              <PermissionRoute featureId="feat_users_mgmt" featureName="Users Management">
+                <UsersManagementPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/access-control"
+            element={
+              <PermissionRoute featureId="feat_users_mgmt" featureName="Users Management">
+                <UsersManagementPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/access-control/users"
+            element={
+              <PermissionRoute featureId="feat_users_mgmt" featureName="Users Management">
+                <UsersManagementPage />
+              </PermissionRoute>
+            }
+          />
+
+          {/* Security Policies */}
+          <Route
+            path="/access-control/policies"
+            element={
+              <PermissionRoute featureId="feat_roles_templates" featureName="Security Policies">
+                <SecurityPoliciesPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/policies"
+            element={
+              <PermissionRoute featureId="feat_roles_templates" featureName="Security Policies">
+                <SecurityPoliciesPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/security-policies"
+            element={
+              <PermissionRoute featureId="feat_roles_templates" featureName="Security Policies">
+                <SecurityPoliciesPage />
+              </PermissionRoute>
+            }
+          />
+
+          {/* Roles & Security Templates */}
+          <Route
+            path="/access-control/roles"
+            element={
+              <PermissionRoute featureId="feat_roles_templates" featureName="Roles & Permissions">
+                <RolesPermissionsPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/roles"
+            element={
+              <PermissionRoute featureId="feat_roles_templates" featureName="Roles & Permissions">
+                <RolesPermissionsPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/roles-permissions"
+            element={
+              <PermissionRoute featureId="feat_roles_templates" featureName="Roles & Permissions">
+                <RolesPermissionsPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/security-templates"
+            element={
+              <PermissionRoute featureId="feat_roles_templates" featureName="Roles & Permissions">
+                <RolesPermissionsPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/access-control/audit-logs"
+            element={
+              <PermissionRoute featureId="feat_audit_compliance" featureName="Audit Logs">
+                <DomainPlaceholderPage />
+              </PermissionRoute>
+            }
+          />
 
           {/* Organization Submenu Items */}
-          <Route path="/organizations/360" element={<Organization360Page />} />
+          <Route
+            path="/organizations/360"
+            element={
+              <PermissionRoute featureId="feat_org_360" featureName="Organization 360">
+                <Organization360Page />
+              </PermissionRoute>
+            }
+          />
           <Route path="/organizations/partner-detail" element={<PartnerDetailPage />} />
           <Route path="/organizations/partner-detail/:org_id" element={<PartnerDetailPage />} />
           <Route path="/organizations/360/:id" element={<PartnerDetailPage />} />
@@ -53,6 +150,7 @@ export const AppRoutes: React.FC = () => {
           <Route path="/partners/:org_id" element={<PartnerDetailPage />} />
           <Route path="/partner-detail" element={<PartnerDetailPage />} />
           <Route path="/partner-detail/:org_id" element={<PartnerDetailPage />} />
+
           <Route path="/brands" element={<DomainPlaceholderPage />} />
           <Route path="/locations" element={<DomainPlaceholderPage />} />
           <Route path="/departments" element={<DomainPlaceholderPage />} />

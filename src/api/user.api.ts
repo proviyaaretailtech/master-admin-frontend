@@ -6,8 +6,7 @@ export interface UpdateUserPayload {
   last_name?: string;
   email?: string;
   phone_number?: string;
-  panel?: string;
-  role?: string;
+  role_id?: string | null;
   status?: "Active" | "Inactive";
 }
 
@@ -15,7 +14,7 @@ export interface GetUsersParams {
   page?: number;
   limit?: number;
   search?: string;
-  panel?: string;
+  role_id?: string;
   status?: string;
 }
 
@@ -28,8 +27,14 @@ export const userApi = {
     if (params.page) queryParams.set("page", String(params.page));
     if (params.limit) queryParams.set("limit", String(params.limit));
     if (params.search && params.search.trim()) queryParams.set("search", params.search.trim());
-    if (params.panel && params.panel !== "All Panels / Roles")
-      queryParams.set("panel", params.panel.trim());
+    if (
+      params.role_id &&
+      params.role_id !== "All Roles" &&
+      params.role_id !== "All Security Roles" &&
+      params.role_id !== "All Panels / Roles"
+    ) {
+      queryParams.set("role_id", params.role_id.trim());
+    }
     if (params.status && params.status !== "All Statuses")
       queryParams.set("status", params.status.trim());
 

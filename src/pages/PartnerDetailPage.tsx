@@ -20,8 +20,10 @@ import {
 } from "../@types";
 import { formatLastSync } from "../lib/date-utils";
 import { generateLocationCode } from "../lib/location-utils";
+import { usePermissions } from "../hooks/use-permissions";
 
 export interface PartnerDetails {
+
   id: string;
   business_name: string;
   domain: string;
@@ -115,8 +117,28 @@ const INITIAL_LOCATIONS: LocationItem[] = [
 
 export const PartnerDetailPage: React.FC = () => {
   const navigate = useNavigate();
+  const { can, canAccess } = usePermissions();
   const { org_id, id } = useParams<{ org_id?: string; id?: string }>();
   const activeOrgId = org_id || id || "";
+
+  // Granular Permission Checks
+  const canApprovePartner = can("feat_partner_review", "approve_partner");
+  const canRejectPartner = can("feat_partner_review", "reject_partner");
+  const canMarkUnderReview = can("feat_partner_review", "mark_under_review");
+  const canDeletePartner = can("feat_partner_review", "delete_partner");
+  const hasAnyReviewAction =
+    canAccess("feat_partner_review") &&
+    (canApprovePartner || canRejectPartner || canMarkUnderReview || canDeletePartner);
+
+  const canViewLocations =
+    canAccess("feat_partner_locations") && can("feat_partner_locations", "view_locations");
+  const canCreateLocation = can("feat_partner_locations", "create_location");
+  const canEditLocation = can("feat_partner_locations", "edit_location");
+  const canDeleteLocation = can("feat_partner_locations", "delete_location");
+  const canManageLocation = canEditLocation || canDeleteLocation;
+
+  const canViewDocs =
+    canAccess("feat_partner_docs") && can("feat_partner_docs", "view_docs");
 
   // Partner state
   const [partner, setPartner] = useState<PartnerDetails>(DEFAULT_PARTNER);
@@ -215,6 +237,10 @@ export const PartnerDetailPage: React.FC = () => {
 
   const confirmDeleteLocation = async () => {
     if (!locationToDelete) return;
+    if (!canDeleteLocation) {
+      showNotification("You do not have permission to delete locations", "error");
+      return;
+    }
     setIsDeletingLocation(true);
     try {
       if (activeOrgId && !activeOrgId.startsWith("PRT-")) {
@@ -269,6 +295,10 @@ export const PartnerDetailPage: React.FC = () => {
 
   // Open Location Modal for Add
   const handleOpenAddLocation = () => {
+    if (!canCreateLocation) {
+      showNotification("You do not have permission to add locations", "error");
+      return;
+    }
     setEditingLocation(null);
     const nextCode = generateLocationCode(partner.business_name, locations.length + 1);
     setLocationForm({
@@ -285,6 +315,10 @@ export const PartnerDetailPage: React.FC = () => {
 
   // Open Location Modal for Edit
   const handleOpenEditLocation = (loc: LocationItem) => {
+    if (!canEditLocation) {
+      showNotification("You do not have permission to edit locations", "error");
+      return;
+    }
     setEditingLocation(loc);
     setLocationForm({
       name: loc.name,
@@ -301,6 +335,14 @@ export const PartnerDetailPage: React.FC = () => {
   // Save Location (Add or Update)
   const handleSaveLocation = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (editingLocation && !canEditLocation) {
+      showNotification("You do not have permission to edit locations", "error");
+      return;
+    }
+    if (!editingLocation && !canCreateLocation) {
+      showNotification("You do not have permission to add locations", "error");
+      return;
+    }
     if (!locationForm.name.trim()) {
       showNotification("Location name is required", "error");
       return;
@@ -417,6 +459,10 @@ export const PartnerDetailPage: React.FC = () => {
 
   // Handle Lifecycle Actions - Delete Partner
   const handleDeletePartner = async () => {
+    if (!canDeletePartner) {
+      showNotification("You do not have permission to delete partners", "error");
+      return;
+    }
     setIsDeletingPartner(true);
     try {
       if (activeOrgId && !activeOrgId.startsWith("PRT-")) {
@@ -598,7 +644,7 @@ export const PartnerDetailPage: React.FC = () => {
       {/* ============================================================== */}
       {/* 3. MIDDLE ROW (Contact & Basic + Documents)                    */}
       {/* ============================================================== */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className={`grid grid-cols-1 ${canViewDocs ? "lg:grid-cols-2" : ""} gap-6`}>
         {/* Card 3: Contact & Basic */}
         <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs">
           <div>
@@ -654,245 +700,313 @@ export const PartnerDetailPage: React.FC = () => {
         </div>
 
         {/* Card 4: Documents */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs">
-          <div>
-            <h2 className="text-base font-bold text-slate-900">Documents</h2>
-            <p className="text-xs text-slate-500 mt-0.5 font-medium">
-              Upload status for the required partner verification documents.
-            </p>
-          </div>
+        {canViewDocs && (
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs">
+            <div>
+              <h2 className="text-base font-bold text-slate-900">Documents</h2>
+              <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                Upload status for the required partner verification documents.
+              </p>
+            </div>
 
-          <div className="space-y-3 mt-5">
-            {[
-              "PAN Card",
-              "Aadhaar Card",
-              "GST Certificate",
-              "Shop Establishment License",
-              "Cancelled Cheque",
-            ].map((doc) => (
-              <div key={doc} className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-800 text-xs sm:text-sm">{doc}</span>
-                <span className="bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A] text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                  Pending
-                </span>
-              </div>
-            ))}
+            <div className="space-y-3 mt-5">
+              {[
+                "PAN Card",
+                "Aadhaar Card",
+                "GST Certificate",
+                "Shop Establishment License",
+                "Cancelled Cheque",
+              ].map((doc) => (
+                <div key={doc} className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-slate-800 text-xs sm:text-sm">{doc}</span>
+                  <span className="bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A] text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                    Pending
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* ============================================================== */}
       {/* 4. REVIEW ACTIONS CARD                                         */}
       {/* ============================================================== */}
-      <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs">
-        <div>
-          <h2 className="text-base font-bold text-slate-900">Review Actions</h2>
-          <p className="text-xs text-slate-500 mt-0.5 font-medium">
-            Lifecycle actions for the partner application.
-          </p>
-        </div>
+      {hasAnyReviewAction && (
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-2xs">
+          <div>
+            <h2 className="text-base font-bold text-slate-900">Review Actions</h2>
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">
+              Lifecycle actions for the partner application.
+            </p>
+          </div>
 
-        <div className="flex flex-wrap items-center gap-3 mt-5">
-          {/* Delete Partner */}
-          <button
-            type="button"
-            onClick={() => setIsDeleteModalOpen(true)}
-            className="border border-[#F43F5E] text-[#E11D48] hover:bg-[#FFF1F2] font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer inline-flex items-center gap-1.5"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            Delete Partner
-          </button>
+          <div className="flex flex-wrap items-center gap-3 mt-5">
+            {/* Approve (Design placeholder - functionality to be enabled once finalized) */}
+            {canApprovePartner && (
+              <button
+                type="button"
+                onClick={() =>
+                  showNotification(
+                    "The Approve button is clickable, but it doesn't do anything yet. Its functionality is still in progress.",
+                    "info"
+                  )
+                }
+                className="bg-[#00875A] hover:bg-[#00744D] text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors shadow-2xs cursor-pointer inline-flex items-center gap-1.5"
+              >
+                Approve
+              </button>
+            )}
+
+            {/* Reject (Design placeholder - functionality to be enabled once finalized) */}
+            {canRejectPartner && (
+              <button
+                type="button"
+                onClick={() =>
+                  showNotification(
+                    "The Reject button is clickable, but it doesn't do anything yet. Its functionality is still in progress.",
+                    "info"
+                  )
+                }
+                className="border border-[#F59E0B] text-[#D97706] hover:bg-[#FFFBEB] font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Reject
+              </button>
+            )}
+
+            {/* Mark under review (Design placeholder - functionality to be enabled once finalized) */}
+            {canMarkUnderReview && (
+              <button
+                type="button"
+                onClick={() =>
+                  showNotification(
+                    "The Mark under review button is clickable, but it doesn't do anything yet. Its functionality is still in progress.",
+                    "info"
+                  )
+                }
+                className="border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
+              >
+                Mark under review
+              </button>
+            )}
+
+            {/* Delete Partner */}
+            {canDeletePartner && (
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(true)}
+                className="border border-[#F43F5E] text-[#E11D48] hover:bg-[#FFF1F2] font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete Partner
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
 
       {/* ============================================================== */}
       {/* 5. LOCATION MANAGEMENT SECTION                                 */}
       {/* ============================================================== */}
-      <div className="space-y-4 pt-2">
-        {/* Header with Title on Left and "Add New Location" + Search on Right */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2.5">
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                Location Management
-              </h2>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                {locations.length} {locations.length === 1 ? "Location" : "Locations"}
-              </span>
+      {canViewLocations && (
+        <div className="space-y-4 pt-2">
+          {/* Header with Title on Left and "Add New Location" + Search on Right */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2.5">
+                <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                  Location Management
+                </h2>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                  {locations.length} {locations.length === 1 ? "Location" : "Locations"}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Manage location records, review operational details, and configure store branches.
+              </p>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
-              Manage location records, review operational details, and configure store branches.
-            </p>
-          </div>
 
-          {/* Right-aligned Controls: Real-time Search + Prominent Primary "Add New Location" Button */}
-          <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-            {/* Quick search input */}
-            <div className="relative min-w-[210px] w-full sm:w-auto">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={locationSearchQuery}
-                onChange={(e) => setLocationSearchQuery(e.target.value)}
-                placeholder="Search locations or codes..."
-                className="w-full pl-8 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all font-medium placeholder:text-slate-400 shadow-2xs"
-              />
-              {locationSearchQuery && (
+            {/* Right-aligned Controls: Real-time Search + Prominent Primary "Add New Location" Button */}
+            <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+              {/* Quick search input */}
+              <div className="relative min-w-[210px] w-full sm:w-auto">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  value={locationSearchQuery}
+                  onChange={(e) => setLocationSearchQuery(e.target.value)}
+                  placeholder="Search locations or codes..."
+                  className="w-full pl-8 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all font-medium placeholder:text-slate-400 shadow-2xs"
+                />
+                {locationSearchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setLocationSearchQuery("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Prominent Add New Location Button above table */}
+              {canCreateLocation && (
                 <button
                   type="button"
-                  onClick={() => setLocationSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  onClick={handleOpenAddLocation}
+                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow cursor-pointer inline-flex items-center justify-center gap-1.5 shrink-0"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
+                  Add New Location
                 </button>
               )}
             </div>
-
-            {/* Prominent Add New Location Button above table */}
-            <button
-              type="button"
-              onClick={handleOpenAddLocation}
-              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-semibold transition-all shadow-sm hover:shadow cursor-pointer inline-flex items-center justify-center gap-1.5 shrink-0"
-            >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-              Add New Location
-            </button>
           </div>
-        </div>
 
-        {/* Location Table Container */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200/80 bg-white">
-                  <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Location</th>
-                  <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">
-                    Location Code
-                  </th>
-                  <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Type</th>
-                  <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Status</th>
-                  <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Time Zone</th>
-                  <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Currency</th>
-                  <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Last Sync</th>
-                  <th className="px-5 py-3.5 text-xs font-semibold text-slate-600 text-right">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {isLoadingLocations ? (
-                  <tr>
-                    <td colSpan={8} className="px-5 py-8 text-center text-xs text-slate-400">
-                      <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
-                        <span>Loading locations...</span>
-                      </div>
-                    </td>
+
+          {/* Location Table Container */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200/80 bg-white">
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Location</th>
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">
+                      Location Code
+                    </th>
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Type</th>
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Status</th>
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Time Zone</th>
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Currency</th>
+                    <th className="px-5 py-3.5 text-xs font-semibold text-slate-600">Last Sync</th>
+                    {canManageLocation && (
+                      <th className="px-5 py-3.5 text-xs font-semibold text-slate-600 text-right">
+                        Action
+                      </th>
+                    )}
                   </tr>
-                ) : filteredLocations.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-5 py-8 text-center text-xs text-slate-400">
-                      No locations found matching &quot;{locationSearchQuery}&quot;.
-                      {locationSearchQuery && (
-                        <button
-                          type="button"
-                          onClick={() => setLocationSearchQuery("")}
-                          className="ml-2 text-blue-600 hover:underline font-semibold cursor-pointer"
-                        >
-                          Clear search
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ) : (
-                  filteredLocations.map((loc) => (
-                    <tr key={loc.id} className="hover:bg-slate-50/70 transition-colors">
-                      {/* Location Name & Subtitle */}
-                      <td className="px-5 py-4">
-                        <div className="text-xs font-bold text-slate-900">{loc.name}</div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">{loc.area}</div>
-                      </td>
-
-                      {/* Location Code */}
-                      <td className="px-5 py-4 text-xs font-medium text-slate-800">{loc.code}</td>
-
-                      {/* Type */}
-                      <td className="px-5 py-4 text-xs font-medium text-slate-700">{loc.type}</td>
-
-                      {/* Status */}
-                      <td className="px-5 py-4">
-                        <span
-                          className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full border ${getStatusBadge(
-                            loc.status
-                          )}`}
-                        >
-                          {loc.status}
-                        </span>
-                      </td>
-
-                      {/* Time Zone */}
-                      <td className="px-5 py-4 text-xs font-medium text-slate-700">
-                        {loc.timeZone}
-                      </td>
-
-                      {/* Currency */}
-                      <td className="px-5 py-4 text-xs font-medium text-slate-700">
-                        {loc.currency}
-                      </td>
-
-                      {/* Last Sync */}
-                      <td className="px-5 py-4">
-                        {(() => {
-                          const sync = formatLastSync(loc.last_sync || loc.lastSync);
-                          return (
-                            <div
-                              className="flex flex-col text-left"
-                              title={`Last synchronized: ${sync.full}`}
-                            >
-                              <span className="text-xs font-semibold text-slate-800">
-                                {sync.main} ({sync.sub})
-                              </span>
-                            </div>
-                          );
-                        })()}
-                      </td>
-
-                      {/* Action */}
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleOpenEditLocation(loc)}
-                            className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setLocationToDelete(loc)}
-                            className="px-3 py-1.5 text-xs font-semibold text-rose-600 bg-white border border-rose-200 rounded-xl hover:bg-rose-50 transition-colors shadow-2xs cursor-pointer"
-                          >
-                            Delete
-                          </button>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {isLoadingLocations ? (
+                    <tr>
+                      <td colSpan={canManageLocation ? 8 : 7} className="px-5 py-8 text-center text-xs text-slate-400">
+                        <div className="flex items-center justify-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
+                          <span>Loading locations...</span>
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : filteredLocations.length === 0 ? (
+                    <tr>
+                      <td colSpan={canManageLocation ? 8 : 7} className="px-5 py-8 text-center text-xs text-slate-400">
+                        No locations found matching &quot;{locationSearchQuery}&quot;.
+                        {locationSearchQuery && (
+                          <button
+                            type="button"
+                            onClick={() => setLocationSearchQuery("")}
+                            className="ml-2 text-blue-600 hover:underline font-semibold cursor-pointer"
+                          >
+                            Clear search
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredLocations.map((loc) => (
+                      <tr key={loc.id} className="hover:bg-slate-50/70 transition-colors">
+                        {/* Location Name & Subtitle */}
+                        <td className="px-5 py-4">
+                          <div className="text-xs font-bold text-slate-900">{loc.name}</div>
+                          <div className="text-[11px] text-slate-400 mt-0.5">{loc.area}</div>
+                        </td>
 
-          {/* Table Footer with Summary & Subtext */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-[11px] text-slate-500">
-            <span>
-              Showing {filteredLocations.length} of {locations.length} operational locations
-            </span>
-            <span>Use the modal pattern for adding and configuring location records.</span>
+                        {/* Location Code */}
+                        <td className="px-5 py-4 text-xs font-medium text-slate-800">{loc.code}</td>
+
+                        {/* Type */}
+                        <td className="px-5 py-4 text-xs font-medium text-slate-700">{loc.type}</td>
+
+                        {/* Status */}
+                        <td className="px-5 py-4">
+                          <span
+                            className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full border ${getStatusBadge(
+                              loc.status
+                            )}`}
+                          >
+                            {loc.status}
+                          </span>
+                        </td>
+
+                        {/* Time Zone */}
+                        <td className="px-5 py-4 text-xs font-medium text-slate-700">
+                          {loc.timeZone}
+                        </td>
+
+                        {/* Currency */}
+                        <td className="px-5 py-4 text-xs font-medium text-slate-700">
+                          {loc.currency}
+                        </td>
+
+                        {/* Last Sync */}
+                        <td className="px-5 py-4">
+                          {(() => {
+                            const sync = formatLastSync(loc.last_sync || loc.lastSync);
+                            return (
+                              <div
+                                className="flex flex-col text-left"
+                                title={`Last synchronized: ${sync.full}`}
+                              >
+                                <span className="text-xs font-semibold text-slate-800">
+                                  {sync.main} ({sync.sub})
+                                </span>
+                              </div>
+                            );
+                          })()}
+                        </td>
+
+                        {/* Action */}
+                        {canManageLocation && (
+                          <td className="px-5 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              {canEditLocation && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenEditLocation(loc)}
+                                  className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+                                >
+                                  Edit
+                                </button>
+                              )}
+                              {canDeleteLocation && (
+                                <button
+                                  type="button"
+                                  onClick={() => setLocationToDelete(loc)}
+                                  className="px-3 py-1.5 text-xs font-semibold text-rose-600 bg-white border border-rose-200 rounded-xl hover:bg-rose-50 transition-colors shadow-2xs cursor-pointer"
+                                >
+                                  Delete
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Table Footer with Summary & Subtext */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-5 py-3 border-t border-slate-100 bg-slate-50/50 text-[11px] text-slate-500">
+              <span>
+                Showing {filteredLocations.length} of {locations.length} operational locations
+              </span>
+              <span>Use the modal pattern for adding and configuring location records.</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ============================================================== */}
       {/* 6. MODAL: ADD / EDIT LOCATION                                  */}

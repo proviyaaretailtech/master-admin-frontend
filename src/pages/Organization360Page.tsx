@@ -15,9 +15,17 @@ import {
 } from "lucide-react";
 import { organizationApi } from "../api";
 import { Organization, Pagination } from "../@types";
+import { usePermissions } from "../hooks/use-permissions";
 
 export const Organization360Page: React.FC = () => {
   const navigate = useNavigate();
+  const { can } = usePermissions();
+
+  const canReviewPartner =
+    can("feat_partner_review", "approve_partner") ||
+    can("feat_partner_review", "reject_partner") ||
+    can("feat_partner_review", "mark_under_review");
+
 
   // Organizations from Supabase Backend DB
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -259,14 +267,16 @@ export const Organization360Page: React.FC = () => {
 
         {/* Action Buttons: Export & Add Partner */}
         <div className="flex items-center gap-2.5">
-          <button
-            onClick={handleExportCSV}
-            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 rounded-xl hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
-            title="Export records to CSV"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-500" />
-            <span>Export</span>
-          </button>
+          {can("feat_org_360", "export_org_csv") && (
+            <button
+              onClick={handleExportCSV}
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 rounded-xl hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
+              title="Export records to CSV"
+            >
+              <Download className="w-3.5 h-3.5 text-slate-500" />
+              <span>Export</span>
+            </button>
+          )}
 
           <button
             onClick={fetchOrganizations}
@@ -278,14 +288,17 @@ export const Organization360Page: React.FC = () => {
           </button>
 
           {/* Add Partner button without plus icon */}
-          <button
-            onClick={handleOpenAddModal}
-            className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-2xs transition-colors cursor-pointer"
-          >
-            Add Partner
-          </button>
+          {can("feat_org_360", "create_org") && (
+            <button
+              onClick={handleOpenAddModal}
+              className="inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-2xs transition-colors cursor-pointer"
+            >
+              Add Partner
+            </button>
+          )}
         </div>
       </div>
+
 
       {/* ============================================================== */}
       {/* 2. SUMMARY KPI STAT CARDS (Connected to Supabase DB)           */}
@@ -551,8 +564,8 @@ export const Organization360Page: React.FC = () => {
                   </span>
                 </div>
 
-                {/* 4. Action Buttons Column: Fixed 195px width & right-aligned */}
-                <div className="w-full md:w-[195px] flex items-center md:justify-end gap-2">
+                {/* 4. Action Buttons Column: right-aligned */}
+                <div className="w-full md:w-auto flex items-center md:justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => navigate(`/organizations/${item.id}`)}
@@ -561,21 +574,25 @@ export const Organization360Page: React.FC = () => {
                     View
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/organizations/${item.id}`)}
-                    className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
-                  >
-                    Review
-                  </button>
+                  {canReviewPartner && (
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/organizations/${item.id}`)}
+                      className="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200/90 rounded-xl hover:bg-slate-50 transition-colors shadow-2xs cursor-pointer"
+                    >
+                      Review
+                    </button>
+                  )}
 
-                  <button
-                    type="button"
-                    onClick={() => handleOpenDeleteModal(item)}
-                    className="px-3 py-1.5 text-xs font-semibold text-rose-600 bg-white border border-rose-200 rounded-xl hover:bg-rose-50 transition-colors shadow-2xs cursor-pointer"
-                  >
-                    Delete
-                  </button>
+                  {can("feat_partner_review", "delete_partner") && (
+                    <button
+                      type="button"
+                      onClick={() => handleOpenDeleteModal(item)}
+                      className="px-3 py-1.5 text-xs font-semibold text-rose-600 bg-white border border-rose-200 rounded-xl hover:bg-rose-50 transition-colors shadow-2xs cursor-pointer"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               </div>
             );

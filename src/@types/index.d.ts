@@ -1,15 +1,23 @@
+import type { FeaturePermission, SecurityRole } from "../api/role.api";
+
 export interface User {
   id: string;
   first_name: string;
   last_name: string;
   email: string;
   phone_number: string;
-  role?: string;
-  panel?: string;
   status?: string;
+  role_id?: string | null;
+  role_name?: string;
+  role_key?: string;
+  role_scope?: string;
+  role_details?: SecurityRole | null;
+  permissions?: FeaturePermission[];
+  isSuperAdmin?: boolean;
   created_at?: string;
   updated_at?: string;
 }
+
 
 export interface AuthResponse {
   message: string;

@@ -1,12 +1,3 @@
-/**
- * Generates standardized location code based on business name and location count.
- * Format: "LOC - <Initials> <3-digit-padded-count>"
- *
- * Examples provided by user:
- * - "LVS CAFE", 1 -> "LOC - LC 001"
- * - "Palleturi Dosa", 1 -> "LOC - PD 001"
- * - "Palleturi Dosa", 2 -> "LOC - PD 002", etc.
- */
 export function generateLocationCode(businessName: string, count: number): string {
   const cleanName = (businessName || "").trim();
   const words = cleanName.split(/\s+/).filter(Boolean);

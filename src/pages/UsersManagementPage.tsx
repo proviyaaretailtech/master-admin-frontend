@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../hooks/use-auth";
+import { usePermissions } from "../hooks/use-permissions";
 import { userApi } from "../api";
+import { roleApi, SecurityRole } from "../api/role.api";
 import { User, Pagination } from "../@types";
 import {
   Search,
@@ -12,13 +14,16 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
+  Shield,
 } from "lucide-react";
 
 export const UsersManagementPage: React.FC = () => {
   const { user: currentAuthUser } = useAuth();
+  const { can } = usePermissions();
 
   // State
   const [users, setUsers] = useState<User[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<SecurityRole[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
     page: 1,
@@ -27,7 +32,7 @@ export const UsersManagementPage: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRoleFilter, setSelectedRoleFilter] = useState("All Panels / Roles");
+  const [selectedRoleFilter, setSelectedRoleFilter] = useState("All Security Roles");
   const [selectedStatusFilter, setSelectedStatusFilter] = useState("All Statuses");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -39,14 +44,28 @@ export const UsersManagementPage: React.FC = () => {
     last_name: "",
     email: "",
     phone_number: "",
-    panel: "Store",
-    role: "store_owner",
+    role_id: "" as string,
     status: "Active" as "Active" | "Inactive",
   });
   const [saving, setSaving] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
-  // Fetch paginated users from Backend & Supabase DB
+  // Load available security roles for dropdown
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await roleApi.getAll();
+        if (res && Array.isArray(res.roles)) {
+          setAvailableRoles(res.roles);
+        }
+      } catch (err) {
+        console.warn("Could not fetch security roles:", err);
+      }
+    };
+    fetchRoles();
+  }, []);
+
+  // Fetch paginated users from Backend
   const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
@@ -54,7 +73,7 @@ export const UsersManagementPage: React.FC = () => {
         page: currentPage,
         limit: 9,
         search: searchTerm,
-        panel: selectedRoleFilter,
+        role_id: selectedRoleFilter !== "All Security Roles" ? selectedRoleFilter : undefined,
         status: selectedStatusFilter,
       });
 
@@ -90,8 +109,7 @@ export const UsersManagementPage: React.FC = () => {
       last_name: targetUser.last_name || "",
       email: targetUser.email || "",
       phone_number: targetUser.phone_number === "-" ? "" : targetUser.phone_number || "",
-      panel: targetUser.panel || "admin",
-      role: targetUser.role || "admin",
+      role_id: targetUser.role_id || "",
       status: (targetUser.status as "Active" | "Inactive") || "Active",
     });
     setModalOpen(true);
@@ -103,7 +121,7 @@ export const UsersManagementPage: React.FC = () => {
     setEditingUser(null);
   };
 
-  // Save changes from modal directly to Supabase DB
+  // Save changes from modal directly to Backend DB
   const handleSaveModal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser) return;
@@ -117,12 +135,11 @@ export const UsersManagementPage: React.FC = () => {
         last_name: modalForm.last_name.trim(),
         email: modalForm.email.trim(),
         phone_number: modalForm.phone_number.trim() || "-",
-        panel: modalForm.panel,
-        role: modalForm.role,
+        role_id: modalForm.role_id ? modalForm.role_id : null,
         status: modalForm.status,
       });
 
-      setFeedbackMessage("Account details updated in database!");
+      setFeedbackMessage("Account details and security role updated!");
       setTimeout(() => {
         setFeedbackMessage(null);
         handleCloseModal();
@@ -135,7 +152,7 @@ export const UsersManagementPage: React.FC = () => {
     }
   };
 
-  // Delete account from modal directly in Supabase DB
+  // Delete account
   const handleDeleteAccount = async () => {
     if (!editingUser) return;
     if (editingUser.id === currentAuthUser?.id) {
@@ -155,24 +172,13 @@ export const UsersManagementPage: React.FC = () => {
     }
   };
 
-  // Role choices mapping
-  const roleOptions = [
-    { panel: "admin", role: "admin" },
-    { panel: "Store", role: "store_owner" },
-    { panel: "Restaurant", role: "restaurant_owner" },
-    { panel: "Driver", role: "driver" },
-    { panel: "Service Provider", role: "service_admin" },
-    { panel: "Shop", role: "shop_admin" },
-    { panel: "Sub Admin", role: "sub_admin" },
-  ];
-
   const startIndex = (pagination.page - 1) * pagination.limit + 1;
   const endIndex = Math.min(pagination.page * pagination.limit, pagination.total);
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto pb-10">
       {/* ============================================================== */}
-      {/* 1. TOP FILTER CONTROLS BAR (Matches Screenshot)                */}
+      {/* 1. TOP FILTER CONTROLS BAR                                     */}
       {/* ============================================================== */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Search input with magnifying glass */}
@@ -190,7 +196,7 @@ export const UsersManagementPage: React.FC = () => {
           />
         </div>
 
-        {/* Dropdown: All Panels / Roles */}
+        {/* Dropdown: Security Roles Filter */}
         <div className="relative">
           <select
             value={selectedRoleFilter}
@@ -200,14 +206,12 @@ export const UsersManagementPage: React.FC = () => {
             }}
             className="appearance-none bg-white border border-slate-200 rounded-xl px-4 py-2 pr-9 text-xs text-slate-700 font-medium focus:border-[#65D000] outline-none shadow-2xs cursor-pointer"
           >
-            <option value="All Panels / Roles">All Panels / Roles</option>
-            <option value="admin">Admin</option>
-            <option value="Store">Store</option>
-            <option value="Restaurant">Restaurant</option>
-            <option value="Driver">Driver</option>
-            <option value="Service Provider">Service Provider</option>
-            <option value="Shop">Shop</option>
-            <option value="Sub Admin">Sub Admin</option>
+            <option value="All Security Roles">All Security Roles</option>
+            {availableRoles.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
           </select>
           <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
         </div>
@@ -241,7 +245,7 @@ export const UsersManagementPage: React.FC = () => {
       </div>
 
       {/* ============================================================== */}
-      {/* 2. MAIN DATA TABLE CARD (Matches Screenshot)                   */}
+      {/* 2. MAIN DATA TABLE CARD                                        */}
       {/* ============================================================== */}
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
         {/* Card Header: Title & Subtitle */}
@@ -249,7 +253,7 @@ export const UsersManagementPage: React.FC = () => {
           <div>
             <h1 className="text-base font-bold text-slate-900 leading-snug">System Accounts</h1>
             <p className="text-xs text-slate-400 mt-0.5">
-              System administration users with cryptographically secure session contexts.
+              System accounts authenticated via security policies and granular permissions.
             </p>
           </div>
         </div>
@@ -260,7 +264,7 @@ export const UsersManagementPage: React.FC = () => {
             <thead className="bg-[#FAFBFB] text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-100 font-bold">
               <tr>
                 <th className="px-6 py-3.5">EMAIL</th>
-                <th className="px-6 py-3.5">PANEL &amp; ROLE</th>
+                <th className="px-6 py-3.5">SECURITY ROLE</th>
                 <th className="px-6 py-3.5">MOBILE</th>
                 <th className="px-6 py-3.5">STATUS</th>
               </tr>
@@ -283,25 +287,32 @@ export const UsersManagementPage: React.FC = () => {
                 </tr>
               ) : (
                 users.map((item) => {
+                  const canEdit = can("feat_users_mgmt", "edit_user");
+                  const roleDisplayName =
+                    item.role_details?.name || item.role_name || (item.role_id ? "Assigned Role" : "No Role Assigned");
+                  const roleScope =
+                    item.role_details?.scope || item.role_scope || (item.role_id ? "Active Policy" : "Unassigned");
+
                   return (
                     <tr
                       key={item.id}
-                      onClick={() => handleOpenEditModal(item)}
-                      className="hover:bg-slate-50/70 transition-colors cursor-pointer"
-                      title="Click row to edit account details"
+                      onClick={canEdit ? () => handleOpenEditModal(item) : undefined}
+                      className={`hover:bg-slate-50/70 transition-colors ${canEdit ? "cursor-pointer" : ""}`}
+                      title={canEdit ? "Click row to edit account details" : undefined}
                     >
                       {/* EMAIL Column */}
                       <td className="px-6 py-4 font-bold text-slate-900 text-xs sm:text-sm">
                         {item.email}
                       </td>
 
-                      {/* PANEL & ROLE Column */}
+                      {/* SECURITY ROLE Column */}
                       <td className="px-6 py-4">
-                        <div className="font-bold text-slate-900 text-xs">
-                          {item.panel || "admin"}
+                        <div className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+                          <Shield className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span>{roleDisplayName}</span>
                         </div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">
-                          {item.role || "admin"}
+                        <div className="text-[11px] text-slate-400 mt-0.5 ml-5">
+                          {roleScope}
                         </div>
                       </td>
 
@@ -330,7 +341,7 @@ export const UsersManagementPage: React.FC = () => {
           </table>
         </div>
 
-        {/* Card Footer: Results Count + Pagination (Matches Screenshot) */}
+        {/* Card Footer: Results Count + Pagination */}
         <div className="p-4 sm:p-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
           <div>
             Showing {pagination.total === 0 ? 0 : startIndex}-{endIndex} of {pagination.total}{" "}
@@ -374,7 +385,7 @@ export const UsersManagementPage: React.FC = () => {
       </div>
 
       {/* ============================================================== */}
-      {/* 3. EDIT ACCOUNT MODAL (Shown when any row is clicked)           */}
+      {/* 3. EDIT ACCOUNT MODAL                                          */}
       {/* ============================================================== */}
       {modalOpen && editingUser && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
@@ -384,7 +395,7 @@ export const UsersManagementPage: React.FC = () => {
               <div>
                 <h2 className="text-base font-bold text-slate-900">Edit System Account</h2>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Update administrator details, role assignment, and access status.
+                  Update administrator details, security role assignment, and access status.
                 </p>
               </div>
 
@@ -471,23 +482,23 @@ export const UsersManagementPage: React.FC = () => {
                 />
               </div>
 
-              {/* Panel & Role and Status Row */}
+              {/* Security Role & Status Row (Zero panel/role dropdowns) */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    Panel &amp; Role
+                    Security Role
                   </label>
                   <select
-                    value={`${modalForm.panel}|${modalForm.role}`}
-                    onChange={(e) => {
-                      const [panel, role] = e.target.value.split("|");
-                      setModalForm((prev) => ({ ...prev, panel, role }));
-                    }}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:border-[#65D000] outline-none"
+                    value={modalForm.role_id}
+                    onChange={(e) =>
+                      setModalForm((prev) => ({ ...prev, role_id: e.target.value }))
+                    }
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:border-[#65D000] outline-none cursor-pointer"
                   >
-                    {roleOptions.map((opt, i) => (
-                      <option key={i} value={`${opt.panel}|${opt.role}`}>
-                        {opt.panel} ({opt.role})
+                    <option value="">No Role Assigned (Restricted)</option>
+                    {availableRoles.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name} ({r.scope})
                       </option>
                     ))}
                   </select>
@@ -505,7 +516,7 @@ export const UsersManagementPage: React.FC = () => {
                         status: e.target.value as "Active" | "Inactive",
                       }))
                     }
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:border-[#65D000] outline-none"
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:border-[#65D000] outline-none cursor-pointer"
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -515,14 +526,18 @@ export const UsersManagementPage: React.FC = () => {
 
               {/* Modal Actions Footer */}
               <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleDeleteAccount}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Delete User</span>
-                </button>
+                <div>
+                  {can("feat_users_mgmt", "delete_user") && (
+                    <button
+                      type="button"
+                      onClick={handleDeleteAccount}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete User</span>
+                    </button>
+                  )}
+                </div>
 
                 <div className="flex items-center gap-2">
                   <button
@@ -533,14 +548,16 @@ export const UsersManagementPage: React.FC = () => {
                     Cancel
                   </button>
 
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#65D000] hover:bg-[#58b800] text-white font-semibold text-xs rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-60"
-                  >
-                    <Save className="w-3.5 h-3.5" />
-                    <span>{saving ? "Saving..." : "Save Changes"}</span>
-                  </button>
+                  {can("feat_users_mgmt", "edit_user") && (
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#65D000] hover:bg-[#58b800] text-white font-semibold text-xs rounded-xl transition-all shadow-xs cursor-pointer disabled:opacity-60"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>{saving ? "Saving..." : "Save Changes"}</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </form>
