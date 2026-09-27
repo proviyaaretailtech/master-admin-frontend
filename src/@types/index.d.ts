@@ -18,7 +18,6 @@ export interface User {
   updated_at?: string;
 }
 
-
 export interface AuthResponse {
   message: string;
   user: User;

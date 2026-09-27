@@ -96,9 +96,17 @@ export const DashboardLayout: React.FC = () => {
   // Navigation Items: Organization (filtered by permissions)
   const organizationSubItems = [
     { name: "Organizations", path: "/dashboard", visible: true },
-    { name: "Organization 360", path: "/organizations/360", visible: can("feat_org_360", "view_directory") },
+    {
+      name: "Organization 360",
+      path: "/organizations/360",
+      visible: can("feat_org_360", "view_directory"),
+    },
     { name: "Brands", path: "/brands", visible: true },
-    { name: "Locations", path: "/locations", visible: can("feat_partner_locations", "view_locations") },
+    {
+      name: "Locations",
+      path: "/locations",
+      visible: can("feat_partner_locations", "view_locations"),
+    },
     { name: "Departments", path: "/departments", visible: true },
     { name: "Employees", path: "/employees", visible: true },
     { name: "Invitations", path: "/invitations", visible: true },
@@ -107,11 +115,22 @@ export const DashboardLayout: React.FC = () => {
   // Navigation Items: Access Control (filtered by permissions)
   const accessControlSubItems = [
     { name: "Users", path: "/users", visible: can("feat_users_mgmt", "view_users") },
-    { name: "Roles & Permissions", path: "/access-control/roles", visible: can("feat_roles_templates", "view_roles") },
-    { name: "Security Policies", path: "/access-control/policies", visible: can("feat_roles_templates", "view_roles") },
-    { name: "Audit Logs", path: "/access-control/audit-logs", visible: can("feat_audit_compliance", "view_audit_logs") },
+    {
+      name: "Roles & Permissions",
+      path: "/access-control/roles",
+      visible: can("feat_roles_templates", "view_roles"),
+    },
+    {
+      name: "Security Policies",
+      path: "/access-control/policies",
+      visible: can("feat_roles_templates", "view_roles"),
+    },
+    {
+      name: "Audit Logs",
+      path: "/access-control/audit-logs",
+      visible: can("feat_audit_compliance", "view_audit_logs"),
+    },
   ].filter((item) => item.visible);
-
 
   // Other System Domains
   const systemDomains = [
@@ -318,7 +337,6 @@ export const DashboardLayout: React.FC = () => {
                 )}
               </div>
             )}
-
 
             {/* 3. Other System Domains */}
             {systemDomains.map((domain) => {

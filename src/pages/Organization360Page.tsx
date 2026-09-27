@@ -26,7 +26,6 @@ export const Organization360Page: React.FC = () => {
     can("feat_partner_review", "reject_partner") ||
     can("feat_partner_review", "mark_under_review");
 
-
   // Organizations from Supabase Backend DB
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
@@ -298,7 +297,6 @@ export const Organization360Page: React.FC = () => {
           )}
         </div>
       </div>
-
 
       {/* ============================================================== */}
       {/* 2. SUMMARY KPI STAT CARDS (Connected to Supabase DB)           */}

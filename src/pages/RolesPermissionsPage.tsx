@@ -21,7 +21,6 @@ import { roleApi } from "../api/role.api";
 import { usePermissions } from "../hooks/use-permissions";
 
 export type FeatureCategory =
-
   "all" | "partner_detail" | "organization" | "access_control" | "system";
 
 export type AccessLevel = "none" | "read_only" | "full";
@@ -288,7 +287,8 @@ export const DEFAULT_FEATURES: FeaturePermission[] = [
       {
         key: "edit_roles",
         label: "Edit Roles & Permissions",
-        description: "Modify authorization parameters, permissions matrix, and actions on existing roles",
+        description:
+          "Modify authorization parameters, permissions matrix, and actions on existing roles",
         enabled: true,
       },
       {
@@ -816,7 +816,6 @@ export const RolesPermissionsPage: React.FC = () => {
         </div>
       </div>
 
-
       {/* ============================================================== */}
       {/* 2. SECURITY TEMPLATES GRID                                     */}
       {/* ============================================================== */}
@@ -994,7 +993,6 @@ export const RolesPermissionsPage: React.FC = () => {
                       </button>
                     )}
                   </div>
-
                 </div>
               </div>
             );

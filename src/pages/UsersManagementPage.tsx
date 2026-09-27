@@ -289,9 +289,13 @@ export const UsersManagementPage: React.FC = () => {
                 users.map((item) => {
                   const canEdit = can("feat_users_mgmt", "edit_user");
                   const roleDisplayName =
-                    item.role_details?.name || item.role_name || (item.role_id ? "Assigned Role" : "No Role Assigned");
+                    item.role_details?.name ||
+                    item.role_name ||
+                    (item.role_id ? "Assigned Role" : "No Role Assigned");
                   const roleScope =
-                    item.role_details?.scope || item.role_scope || (item.role_id ? "Active Policy" : "Unassigned");
+                    item.role_details?.scope ||
+                    item.role_scope ||
+                    (item.role_id ? "Active Policy" : "Unassigned");
 
                   return (
                     <tr
@@ -311,9 +315,7 @@ export const UsersManagementPage: React.FC = () => {
                           <Shield className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <span>{roleDisplayName}</span>
                         </div>
-                        <div className="text-[11px] text-slate-400 mt-0.5 ml-5">
-                          {roleScope}
-                        </div>
+                        <div className="text-[11px] text-slate-400 mt-0.5 ml-5">{roleScope}</div>
                       </td>
 
                       {/* MOBILE Column */}
@@ -490,9 +492,7 @@ export const UsersManagementPage: React.FC = () => {
                   </label>
                   <select
                     value={modalForm.role_id}
-                    onChange={(e) =>
-                      setModalForm((prev) => ({ ...prev, role_id: e.target.value }))
-                    }
+                    onChange={(e) => setModalForm((prev) => ({ ...prev, role_id: e.target.value }))}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:border-[#65D000] outline-none cursor-pointer"
                   >
                     <option value="">No Role Assigned (Restricted)</option>

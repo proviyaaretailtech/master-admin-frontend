@@ -22,9 +22,7 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({
         <ShieldAlert className="w-8 h-8" />
       </div>
 
-      <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mb-2">
-        {title}
-      </h1>
+      <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mb-2">{title}</h1>
 
       <p className="text-sm text-slate-500 max-w-md mb-6 leading-relaxed">
         {message ||

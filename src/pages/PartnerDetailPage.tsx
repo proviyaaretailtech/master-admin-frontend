@@ -23,7 +23,6 @@ import { generateLocationCode } from "../lib/location-utils";
 import { usePermissions } from "../hooks/use-permissions";
 
 export interface PartnerDetails {
-
   id: string;
   business_name: string;
   domain: string;
@@ -137,8 +136,7 @@ export const PartnerDetailPage: React.FC = () => {
   const canDeleteLocation = can("feat_partner_locations", "delete_location");
   const canManageLocation = canEditLocation || canDeleteLocation;
 
-  const canViewDocs =
-    canAccess("feat_partner_docs") && can("feat_partner_docs", "view_docs");
+  const canViewDocs = canAccess("feat_partner_docs") && can("feat_partner_docs", "view_docs");
 
   // Partner state
   const [partner, setPartner] = useState<PartnerDetails>(DEFAULT_PARTNER);
@@ -805,7 +803,6 @@ export const PartnerDetailPage: React.FC = () => {
         </div>
       )}
 
-
       {/* ============================================================== */}
       {/* 5. LOCATION MANAGEMENT SECTION                                 */}
       {/* ============================================================== */}
@@ -864,7 +861,6 @@ export const PartnerDetailPage: React.FC = () => {
             </div>
           </div>
 
-
           {/* Location Table Container */}
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
             <div className="overflow-x-auto">
@@ -890,7 +886,10 @@ export const PartnerDetailPage: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {isLoadingLocations ? (
                     <tr>
-                      <td colSpan={canManageLocation ? 8 : 7} className="px-5 py-8 text-center text-xs text-slate-400">
+                      <td
+                        colSpan={canManageLocation ? 8 : 7}
+                        className="px-5 py-8 text-center text-xs text-slate-400"
+                      >
                         <div className="flex items-center justify-center gap-2">
                           <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
                           <span>Loading locations...</span>
@@ -899,7 +898,10 @@ export const PartnerDetailPage: React.FC = () => {
                     </tr>
                   ) : filteredLocations.length === 0 ? (
                     <tr>
-                      <td colSpan={canManageLocation ? 8 : 7} className="px-5 py-8 text-center text-xs text-slate-400">
+                      <td
+                        colSpan={canManageLocation ? 8 : 7}
+                        className="px-5 py-8 text-center text-xs text-slate-400"
+                      >
                         No locations found matching &quot;{locationSearchQuery}&quot;.
                         {locationSearchQuery && (
                           <button

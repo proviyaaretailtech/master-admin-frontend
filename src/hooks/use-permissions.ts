@@ -18,12 +18,9 @@ export const usePermissions = (): UsePermissionsReturn => {
   const authContext = useContext(AuthContext);
   const user = authContext?.user;
 
-
   // If user is superadmin, or in mock test contexts without explicit user object
   const isSuperAdmin = Boolean(
-    !user ||
-    user.isSuperAdmin ||
-    user.role_details?.key === "super_admin"
+    !user || user.isSuperAdmin || user.role_details?.key === "super_admin"
   );
 
   const permissions: FeaturePermission[] = user?.permissions || [];
@@ -61,7 +58,8 @@ export const usePermissions = (): UsePermissionsReturn => {
     const feature = permissions.find((f) => f.id === featureId);
     if (!feature) return false;
     if (level === "full") return feature.accessLevel === "full";
-    if (level === "read_only") return feature.accessLevel === "read_only" || feature.accessLevel === "full";
+    if (level === "read_only")
+      return feature.accessLevel === "read_only" || feature.accessLevel === "full";
     return true;
   };
 
