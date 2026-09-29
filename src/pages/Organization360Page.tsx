@@ -60,7 +60,7 @@ export const Organization360Page: React.FC = () => {
     domain: "Restaurant",
     email: "",
     phone_number: "",
-    status: "Active",
+    status: "Draft",
   });
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -145,7 +145,7 @@ export const Organization360Page: React.FC = () => {
       domain: "Restaurant",
       email: "",
       phone_number: "",
-      status: "Active",
+      status: "Draft",
     });
     setFormError(null);
     setAddModalOpen(true);
