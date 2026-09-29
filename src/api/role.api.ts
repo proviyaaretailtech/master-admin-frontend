@@ -9,10 +9,13 @@ export interface GranularAction {
   enabled: boolean;
 }
 
+export type FeatureCategory =
+  "commercials" | "partner_detail" | "organization" | "access_control" | "system";
+
 export interface FeaturePermission {
   id: string;
   name: string;
-  category: "partner_detail" | "organization" | "access_control" | "system";
+  category: FeatureCategory;
   pagePath: string;
   description: string;
   accessLevel: AccessLevel;
