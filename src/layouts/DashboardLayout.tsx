@@ -33,7 +33,6 @@ export const DashboardLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Navigation active detections
   const isAccessControlActive =
     location.pathname === "/users" ||
     location.pathname.startsWith("/access-control") ||
@@ -43,11 +42,18 @@ export const DashboardLayout: React.FC = () => {
     location.pathname === "/roles-permissions" ||
     location.pathname === "/security-templates";
 
+  const isCommercialsActive = location.pathname.startsWith("/commercials");
+
   // State
   const [isOnlineAccepting, setIsOnlineAccepting] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isOrganizationExpanded, setIsOrganizationExpanded] = useState(!isAccessControlActive);
+  const [isOrganizationExpanded, setIsOrganizationExpanded] = useState(
+    !isAccessControlActive && !isCommercialsActive
+  );
   const [isAccessControlExpanded, setIsAccessControlExpanded] = useState(isAccessControlActive);
+  const [isCommercialsExpanded, setIsCommercialsExpanded] = useState<boolean>(
+    isCommercialsActive || true
+  );
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -69,6 +75,9 @@ export const DashboardLayout: React.FC = () => {
     if (isAccessControlActive) {
       setIsAccessControlExpanded(true);
     }
+    if (isCommercialsActive) {
+      setIsCommercialsExpanded(true);
+    }
     if (
       location.pathname.startsWith("/organizations") ||
       location.pathname === "/dashboard" ||
@@ -82,7 +91,7 @@ export const DashboardLayout: React.FC = () => {
       setIsOrganizationExpanded(true);
     }
     setIsMobileSidebarOpen(false);
-  }, [location.pathname, isAccessControlActive]);
+  }, [location.pathname, isAccessControlActive, isCommercialsActive]);
 
   const handleSignOut = async () => {
     setIsDropdownOpen(false);
@@ -132,9 +141,19 @@ export const DashboardLayout: React.FC = () => {
     },
   ].filter((item) => item.visible);
 
+  // Navigation Items: Commercials (matches screenshots 1 & 2)
+  const commercialsSubItems = [
+    { name: "Plans", path: "/commercials/plans" },
+    { name: "Packs", path: "/commercials/packs" },
+    { name: "Add-ons", path: "/commercials/add-ons" },
+    { name: "Subscriptions", path: "/commercials/subscriptions" },
+    { name: "Entitlements", path: "/commercials/entitlements" },
+    { name: "Usage", path: "/commercials/usage" },
+    { name: "Billing", path: "/commercials/billing" },
+  ];
+
   // Other System Domains
   const systemDomains = [
-    { name: "Commercials", icon: Landmark, path: "/commercials" },
     { name: "Platform Core", icon: Layers, path: "/platform-core" },
     { name: "Commerce Engine", icon: ShoppingCart, path: "/commerce-engine" },
     { name: "Inventory Supply", icon: Package, path: "/inventory-supply" },
@@ -338,7 +357,58 @@ export const DashboardLayout: React.FC = () => {
               </div>
             )}
 
-            {/* 3. Other System Domains */}
+            {/* 3. Commercials Section (Plans, Packs, Add-ons, Subscriptions, Entitlements, Usage, Billing) */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setIsCommercialsExpanded(!isCommercialsExpanded)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                  isCommercialsActive
+                    ? "bg-[#EEF9E8] text-[#3E8800]"
+                    : "text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Landmark
+                    className={`w-4 h-4 ${isCommercialsActive ? "text-[#4FA800]" : "text-slate-500"}`}
+                  />
+                  <span>Commercials</span>
+                </div>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    isCommercialsExpanded ? "rotate-0 text-[#4FA800]" : "-rotate-90 text-slate-400"
+                  }`}
+                />
+              </button>
+
+              {/* Commercials Submenu Items */}
+              {isCommercialsExpanded && (
+                <div className="mt-1 ml-5 pl-2 border-l border-slate-200/80 space-y-0.5">
+                  {commercialsSubItems.map((sub) => {
+                    const isActive =
+                      location.pathname === sub.path ||
+                      (sub.name === "Plans" &&
+                        (location.pathname === "/commercials" ||
+                          location.pathname.startsWith("/commercials/plans")));
+                    return (
+                      <Link
+                        key={sub.name}
+                        to={sub.path}
+                        className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                          isActive
+                            ? "bg-[#DEF5CE] text-[#337400] font-bold"
+                            : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium"
+                        }`}
+                      >
+                        {sub.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* 4. Other System Domains */}
             {systemDomains.map((domain) => {
               const IconComponent = domain.icon;
               const isActive = location.pathname === domain.path;

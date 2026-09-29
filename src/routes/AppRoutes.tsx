@@ -8,6 +8,8 @@ import { UsersManagementPage } from "../pages/UsersManagementPage";
 import { Organization360Page } from "../pages/Organization360Page";
 import { PartnerDetailPage } from "../pages/PartnerDetailPage";
 import { RolesPermissionsPage } from "../pages/RolesPermissionsPage";
+import { CommercialPlansPage } from "../pages/CommercialPlansPage";
+import { PlanEditorPage } from "../pages/PlanEditorPage";
 import { DomainPlaceholderPage } from "../pages/DomainPlaceholderPage";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { ProtectedRoute } from "../components/common/ProtectedRoute";
@@ -156,8 +158,13 @@ export const AppRoutes: React.FC = () => {
           <Route path="/employees" element={<DomainPlaceholderPage />} />
           <Route path="/invitations" element={<DomainPlaceholderPage />} />
 
-          {/* System Domains */}
-          <Route path="/commercials" element={<DomainPlaceholderPage />} />
+          {/* Commercials Domain: Plans, Packs, Add-ons, Subscriptions, Entitlements, Usage, Billing */}
+          <Route path="/commercials" element={<CommercialPlansPage />} />
+          <Route path="/commercials/plans" element={<CommercialPlansPage />} />
+          <Route path="/commercials/plans/new" element={<PlanEditorPage />} />
+          <Route path="/commercials/plans/:planId/edit" element={<PlanEditorPage />} />
+          <Route path="/commercials/plans/:planId" element={<PlanEditorPage />} />
+          <Route path="/commercials/:subdomain" element={<DomainPlaceholderPage />} />
           <Route path="/platform-core" element={<DomainPlaceholderPage />} />
           <Route path="/commerce-engine" element={<DomainPlaceholderPage />} />
           <Route path="/inventory-supply" element={<DomainPlaceholderPage />} />
