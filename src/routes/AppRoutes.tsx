@@ -10,6 +10,7 @@ import { PartnerDetailPage } from "../pages/PartnerDetailPage";
 import { RolesPermissionsPage } from "../pages/RolesPermissionsPage";
 import { CommercialPlansPage } from "../pages/CommercialPlansPage";
 import { PlanEditorPage } from "../pages/PlanEditorPage";
+import { PlatformModulesPage } from "../pages/PlatformModulesPage";
 import { DomainPlaceholderPage } from "../pages/DomainPlaceholderPage";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { ProtectedRoute } from "../components/common/ProtectedRoute";
@@ -159,11 +160,62 @@ export const AppRoutes: React.FC = () => {
           <Route path="/invitations" element={<DomainPlaceholderPage />} />
 
           {/* Commercials Domain: Plans, Packs, Add-ons, Subscriptions, Entitlements, Usage, Billing */}
-          <Route path="/commercials" element={<CommercialPlansPage />} />
-          <Route path="/commercials/plans" element={<CommercialPlansPage />} />
-          <Route path="/commercials/plans/new" element={<PlanEditorPage />} />
-          <Route path="/commercials/plans/:planId/edit" element={<PlanEditorPage />} />
-          <Route path="/commercials/plans/:planId" element={<PlanEditorPage />} />
+          <Route
+            path="/commercials"
+            element={
+              <PermissionRoute featureId="feat_commercial_plans" featureName="Commercial Plans">
+                <CommercialPlansPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/commercials/plans"
+            element={
+              <PermissionRoute featureId="feat_commercial_plans" featureName="Commercial Plans">
+                <CommercialPlansPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/commercials/modules"
+            element={
+              <PermissionRoute featureId="feat_commercial_plans" featureName="Platform Modules">
+                <PlatformModulesPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/commercials/plans/new"
+            element={
+              <PermissionRoute
+                featureId="feat_commercial_plans"
+                actionKey="create_plan"
+                featureName="Create Plan"
+              >
+                <PlanEditorPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/commercials/plans/:planId/edit"
+            element={
+              <PermissionRoute
+                featureId="feat_commercial_plans"
+                actionKey="edit_plan"
+                featureName="Edit Plan"
+              >
+                <PlanEditorPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/commercials/plans/:planId"
+            element={
+              <PermissionRoute featureId="feat_commercial_plans" featureName="Commercial Plans">
+                <PlanEditorPage />
+              </PermissionRoute>
+            }
+          />
           <Route path="/commercials/:subdomain" element={<DomainPlaceholderPage />} />
           <Route path="/platform-core" element={<DomainPlaceholderPage />} />
           <Route path="/commerce-engine" element={<DomainPlaceholderPage />} />
