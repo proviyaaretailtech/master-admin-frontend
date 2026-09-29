@@ -8,7 +8,6 @@ import { UsersManagementPage } from "../pages/UsersManagementPage";
 import { Organization360Page } from "../pages/Organization360Page";
 import { PartnerDetailPage } from "../pages/PartnerDetailPage";
 import { RolesPermissionsPage } from "../pages/RolesPermissionsPage";
-import { SecurityPoliciesPage } from "../pages/SecurityPoliciesPage";
 import { DomainPlaceholderPage } from "../pages/DomainPlaceholderPage";
 import { DashboardLayout } from "../layouts/DashboardLayout";
 import { ProtectedRoute } from "../components/common/ProtectedRoute";
@@ -70,7 +69,7 @@ export const AppRoutes: React.FC = () => {
             path="/access-control/policies"
             element={
               <PermissionRoute featureId="feat_roles_templates" featureName="Security Policies">
-                <SecurityPoliciesPage />
+                <RolesPermissionsPage />
               </PermissionRoute>
             }
           />
@@ -78,7 +77,7 @@ export const AppRoutes: React.FC = () => {
             path="/policies"
             element={
               <PermissionRoute featureId="feat_roles_templates" featureName="Security Policies">
-                <SecurityPoliciesPage />
+                <RolesPermissionsPage />
               </PermissionRoute>
             }
           />
@@ -86,7 +85,7 @@ export const AppRoutes: React.FC = () => {
             path="/security-policies"
             element={
               <PermissionRoute featureId="feat_roles_templates" featureName="Security Policies">
-                <SecurityPoliciesPage />
+                <RolesPermissionsPage />
               </PermissionRoute>
             }
           />

@@ -1,13 +1,12 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/auth-context";
-import { FeaturePermission, AccessLevel } from "../api/role.api";
+import { FeaturePermission } from "../api/role.api";
 
 export interface UsePermissionsReturn {
   permissions: FeaturePermission[];
   isSuperAdmin: boolean;
   can: (featureId: string, actionKey?: string) => boolean;
   canAccess: (featureId: string) => boolean;
-  hasLevel: (featureId: string, level: AccessLevel) => boolean;
   roleName: string;
 }
 
@@ -51,18 +50,6 @@ export const usePermissions = (): UsePermissionsReturn => {
     return can(featureId);
   };
 
-  const hasLevel = (featureId: string, level: AccessLevel): boolean => {
-    if (!user || (isSuperAdmin && (!user.permissions || user.permissions.length === 0))) {
-      return true;
-    }
-    const feature = permissions.find((f) => f.id === featureId);
-    if (!feature) return false;
-    if (level === "full") return feature.accessLevel === "full";
-    if (level === "read_only")
-      return feature.accessLevel === "read_only" || feature.accessLevel === "full";
-    return true;
-  };
-
   const roleName = user?.role_details?.name || "Unassigned";
 
   return {
@@ -70,7 +57,6 @@ export const usePermissions = (): UsePermissionsReturn => {
     isSuperAdmin,
     can,
     canAccess,
-    hasLevel,
     roleName,
   };
 };
