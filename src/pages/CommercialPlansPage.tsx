@@ -96,13 +96,14 @@ const INITIAL_PLANS: PlanItem[] = [
   },
 ];
 
+type StatusFilter = "All Active" | "All" | "Draft" | "Published" | "Retired";
+type CurrencyFilter = "INR (₹)" | "USD ($)";
+
 export const CommercialPlansPage: React.FC = () => {
   const navigate = useNavigate();
   const [plans, setPlans] = useState<PlanItem[]>(INITIAL_PLANS);
-  const [statusFilter, setStatusFilter] = useState<
-    "All Active" | "All" | "Draft" | "Published" | "Retired"
-  >("All Active");
-  const [currencyFilter, setCurrencyFilter] = useState<"INR (₹)" | "USD ($)">("INR (₹)");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("All Active");
+  const [currencyFilter, setCurrencyFilter] = useState<CurrencyFilter>("INR (₹)");
   const [showRetiredView, setShowRetiredView] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -226,7 +227,7 @@ export const CommercialPlansPage: React.FC = () => {
         <div className="relative">
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
+            onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
             className="appearance-none bg-white border border-slate-200 rounded-lg px-3 py-1.5 pr-7 text-xs font-medium text-slate-800 shadow-2xs focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
           >
             <option value="All Active">Status: All Active</option>
@@ -242,7 +243,7 @@ export const CommercialPlansPage: React.FC = () => {
         <div className="relative">
           <select
             value={currencyFilter}
-            onChange={(e) => setCurrencyFilter(e.target.value as any)}
+            onChange={(e) => setCurrencyFilter(e.target.value as CurrencyFilter)}
             className="appearance-none bg-white border border-slate-200 rounded-lg px-3 py-1.5 pr-7 text-xs font-medium text-slate-800 shadow-2xs focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
           >
             <option value="INR (₹)">Currency: INR (₹)</option>
@@ -408,7 +409,9 @@ export const CommercialPlansPage: React.FC = () => {
             <div className="text-[10px] uppercase font-bold text-[#B45309] tracking-wider mb-1">
               API status / Validation Pending
             </div>
-            <div>Pending server confirmation for plan retirement on "Legacy Basic"...</div>
+            <div>
+              Pending server confirmation for plan retirement on &quot;Legacy Basic&quot;...
+            </div>
           </div>
 
           {/* Card 2: Validation Error State */}
@@ -416,7 +419,9 @@ export const CommercialPlansPage: React.FC = () => {
             <div className="text-[10px] uppercase font-bold text-[#E11D48] tracking-wider mb-1">
               Validation Error State
             </div>
-            <div>Error: Custom plan "Enterprise v1.4" lacks mandatory Commercials module.</div>
+            <div>
+              Error: Custom plan &quot;Enterprise v1.4&quot; lacks mandatory Commercials module.
+            </div>
           </div>
 
           {/* Card 3: Publish Queue Confirmation */}
