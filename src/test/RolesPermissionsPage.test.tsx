@@ -176,6 +176,34 @@ describe("RolesPermissionsPage Component (Feature-by-Feature Access Control with
     expect(screen.getByText("Partner Detail: Locations Management Table")).toBeInTheDocument();
   });
 
+  it("filters feature permissions by category dropdown in role modal", async () => {
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { name: /^Super-admin$/i })).toBeInTheDocument();
+    });
+
+    const createBtn = screen.getByRole("button", { name: /Create Role/i });
+    fireEvent.click(createBtn);
+
+    const categorySelect = screen.getByLabelText(/Filter features by module category/i);
+    expect(categorySelect).toBeInTheDocument();
+
+    // Initially "all" shows both commercials and partner detail features
+    expect(screen.getByText("Commercials: Platform Plans & Modules")).toBeInTheDocument();
+    expect(screen.getByText("Partner Detail: Review Lifecycle Actions")).toBeInTheDocument();
+
+    // Select "Commercials & Plans"
+    fireEvent.change(categorySelect, { target: { value: "commercials" } });
+    expect(screen.getByText("Commercials: Platform Plans & Modules")).toBeInTheDocument();
+    expect(screen.queryByText("Partner Detail: Review Lifecycle Actions")).not.toBeInTheDocument();
+
+    // Switch to "Partner Detail & Review"
+    fireEvent.change(categorySelect, { target: { value: "partner_detail" } });
+    expect(screen.getByText("Partner Detail: Review Lifecycle Actions")).toBeInTheDocument();
+    expect(screen.queryByText("Commercials: Platform Plans & Modules")).not.toBeInTheDocument();
+  });
+
   it("submits new role to roleApi.create and closes modal", async () => {
     const createdMockRole = {
       id: "role-3",

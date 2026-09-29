@@ -1274,29 +1274,56 @@ export const RolesPermissionsPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Category Filter Tabs */}
-                <div className="flex items-center gap-1.5 border-b border-slate-200 pb-2 overflow-x-auto text-xs font-semibold">
-                  {[
-                    { id: "all", label: "All Pages & Features" },
-                    { id: "commercials", label: "Commercials & Plans" },
-                    { id: "partner_detail", label: "Partner Detail & Review" },
-                    { id: "organization", label: "Organization 360" },
-                    { id: "access_control", label: "Users & Access Control" },
-                    { id: "system", label: "Audit & System Logs" },
-                  ].map((tab) => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveCategoryTab(tab.id as FeatureCategory)}
-                      className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap cursor-pointer ${
-                        activeCategoryTab === tab.id
-                          ? "bg-slate-900 text-white"
-                          : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                      }`}
+                {/* Category Filter Controls */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl">
+                  {/* Category Select Filter */}
+                  <div className="flex items-center gap-2.5">
+                    <label
+                      htmlFor="feature-category-filter"
+                      className="text-xs font-bold text-slate-700 shrink-0"
                     >
-                      {tab.label}
-                    </button>
-                  ))}
+                      Module Category:
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="feature-category-filter"
+                        value={activeCategoryTab}
+                        onChange={(e) => setActiveCategoryTab(e.target.value as FeatureCategory)}
+                        aria-label="Filter features by module category"
+                        className="appearance-none bg-white border border-slate-200 rounded-xl px-3 py-1.5 pr-8 text-xs font-semibold text-slate-800 shadow-2xs hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#65D000]/30 cursor-pointer"
+                      >
+                        <option value="all">All Pages & Features ({formFeatures.length})</option>
+                        <option value="commercials">
+                          Commercials & Plans (
+                          {formFeatures.filter((f) => f.category === "commercials").length})
+                        </option>
+                        <option value="partner_detail">
+                          Partner Detail & Review (
+                          {formFeatures.filter((f) => f.category === "partner_detail").length})
+                        </option>
+                        <option value="organization">
+                          Organization 360 (
+                          {formFeatures.filter((f) => f.category === "organization").length})
+                        </option>
+                        <option value="access_control">
+                          Users & Access Control (
+                          {formFeatures.filter((f) => f.category === "access_control").length})
+                        </option>
+                        <option value="system">
+                          Audit & System Logs (
+                          {formFeatures.filter((f) => f.category === "system").length})
+                        </option>
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  {/* Showing count indicator */}
+                  <div className="text-[11px] text-slate-500 font-medium">
+                    Showing{" "}
+                    <span className="font-bold text-slate-800">{displayedFeatures.length}</span>{" "}
+                    {displayedFeatures.length === 1 ? "feature module" : "feature modules"}
+                  </div>
                 </div>
 
                 {/* Feature Cards List */}
