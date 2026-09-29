@@ -149,7 +149,7 @@ export const PlanEditorPage: React.FC = () => {
       plan_code: planCode,
       price: parseFloat(price.replace(/,/g, "")) || 0,
       currency,
-      cadence: (billingCadence as any) || "Monthly",
+      cadence: (billingCadence as "Monthly" | "Quarterly" | "Annual") || "Monthly",
       trial_days: parseInt(trialDays, 10) || 3,
       effective_date: effectiveDate,
       locations_limit: parseInt(locationsAllowed, 10) || 1,
@@ -170,8 +170,11 @@ export const PlanEditorPage: React.FC = () => {
         setToastMessage("Plan draft saved successfully.");
         setHasUnsavedChanges(false);
       }
-    } catch (err: any) {
-      setToastMessage(err.response?.data?.message || "Failed to save draft.");
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to save draft.";
+      setToastMessage(msg);
     } finally {
       setIsSaving(false);
       setTimeout(() => setToastMessage(null), 3500);
@@ -201,7 +204,7 @@ export const PlanEditorPage: React.FC = () => {
           plan_code: planCode,
           price: parseFloat(price.replace(/,/g, "")) || 0,
           currency,
-          cadence: (billingCadence as any) || "Monthly",
+          cadence: (billingCadence as "Monthly" | "Quarterly" | "Annual") || "Monthly",
           trial_days: parseInt(trialDays, 10) || 3,
           effective_date: effectiveDate,
           locations_limit: parseInt(locationsAllowed, 10) || 1,
@@ -217,7 +220,7 @@ export const PlanEditorPage: React.FC = () => {
           plan_code: planCode,
           price: parseFloat(price.replace(/,/g, "")) || 0,
           currency,
-          cadence: (billingCadence as any) || "Monthly",
+          cadence: (billingCadence as "Monthly" | "Quarterly" | "Annual") || "Monthly",
           trial_days: parseInt(trialDays, 10) || 3,
           effective_date: effectiveDate,
           locations_limit: parseInt(locationsAllowed, 10) || 1,
@@ -229,8 +232,11 @@ export const PlanEditorPage: React.FC = () => {
       }
       setHasUnsavedChanges(false);
       setTimeout(() => navigate("/commercials/plans"), 1200);
-    } catch (err: any) {
-      setToastMessage(err.response?.data?.message || "Failed to publish plan.");
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to publish plan.";
+      setToastMessage(msg);
     } finally {
       setIsSaving(false);
       setTimeout(() => setToastMessage(null), 3500);

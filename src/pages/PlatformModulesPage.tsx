@@ -118,8 +118,11 @@ export const PlatformModulesPage: React.FC = () => {
         setToastMessage(`Platform module "${res.module.name}" created successfully.`);
       }
       setShowModal(false);
-    } catch (err: any) {
-      setToastMessage(err.response?.data?.message || "Failed to save module.");
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to save module.";
+      setToastMessage(msg);
     } finally {
       setIsSubmitting(false);
       setTimeout(() => setToastMessage(null), 3500);
@@ -134,8 +137,11 @@ export const PlatformModulesPage: React.FC = () => {
       setModules((prev) => prev.filter((m) => m.id !== moduleToDelete.id));
       setToastMessage(`Module "${moduleToDelete.name}" deleted successfully.`);
       setModuleToDelete(null);
-    } catch (err: any) {
-      setToastMessage(err.response?.data?.message || "Failed to delete module.");
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Failed to delete module.";
+      setToastMessage(msg);
     } finally {
       setIsDeleting(false);
       setTimeout(() => setToastMessage(null), 4000);
@@ -515,7 +521,7 @@ export const PlatformModulesPage: React.FC = () => {
 
             <p className="text-xs text-slate-600 leading-relaxed">
               Are you sure you want to delete module{" "}
-              <strong className="text-slate-800">"{moduleToDelete.name}"</strong> (
+              <strong className="text-slate-800">&quot;{moduleToDelete.name}&quot;</strong> (
               <span className="font-mono text-slate-700">{moduleToDelete.key}</span>)? This action
               cannot be undone. Modules included in active commercial plans cannot be deleted.
             </p>
