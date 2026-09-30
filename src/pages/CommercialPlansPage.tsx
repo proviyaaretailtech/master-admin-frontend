@@ -112,6 +112,8 @@ export const CommercialPlansPage: React.FC = () => {
   const [currencyFilter, setCurrencyFilter] = useState<CurrencyFilter>("INR (₹)");
   const [showRetiredView, setShowRetiredView] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [planToRetire, setPlanToRetire] = useState<PlanItem | null>(null);
+  const [isRetiring, setIsRetiring] = useState(false);
 
   const hasAnyPlanActions = canEdit || canDuplicate || canRetire || showRetiredView;
 
@@ -190,19 +192,28 @@ export const CommercialPlansPage: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  const handleRetire = async (planId: string) => {
+  const handleOpenRetireModal = (plan: PlanItem) => {
+    setPlanToRetire(plan);
+  };
+
+  const handleConfirmRetire = async () => {
+    if (!planToRetire) return;
+    setIsRetiring(true);
     try {
-      await planApi.retire(planId);
+      await planApi.retire(planToRetire.id);
       setPlans((prev) =>
         prev.map((p) =>
-          p.id === planId
+          p.id === planToRetire.id
             ? { ...p, status: "Retired", lastUpdatedTime: "Just now", lastUpdatedBy: "by you" }
             : p
         )
       );
-      setToastMessage("Plan status updated to Retired.");
+      setToastMessage(`Plan "${planToRetire.name}" status updated to Retired.`);
+      setPlanToRetire(null);
     } catch {
       setToastMessage("Failed to retire plan.");
+    } finally {
+      setIsRetiring(false);
     }
     setTimeout(() => setToastMessage(null), 3000);
   };
@@ -496,7 +507,7 @@ export const CommercialPlansPage: React.FC = () => {
                               {canRetire && (
                                 <button
                                   type="button"
-                                  onClick={() => handleRetire(plan.id)}
+                                  onClick={() => handleOpenRetireModal(plan)}
                                   className="text-slate-600 hover:text-rose-600 font-medium hover:underline cursor-pointer"
                                 >
                                   Retire
@@ -524,6 +535,66 @@ export const CommercialPlansPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Retire Commercial Plan Confirmation Modal */}
+      {planToRetire && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-in zoom-in-95 duration-150">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-600 shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Retire Commercial Plan</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Update plan lifecycle status to restrict new organization adoptions.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 font-medium">Plan Name:</span>
+                <span className="font-bold text-slate-900">{planToRetire.name}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 font-medium">Pricing / Cadence:</span>
+                <span className="font-semibold text-slate-800">
+                  {planToRetire.price} / {planToRetire.cadence.toLowerCase()}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500 font-medium">Active Subscriptions:</span>
+                <span className="font-semibold text-slate-800">{planToRetire.assignmentsLabel}</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Are you sure you want to retire <strong className="text-slate-900 font-semibold">&quot;{planToRetire.name}&quot;</strong>? Existing organizations will continue on this plan uninterrupted, but new organizations cannot be assigned to it.
+            </p>
+
+            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setPlanToRetire(null)}
+                disabled={isRetiring}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isRetiring}
+                onClick={handleConfirmRetire}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+              >
+                {isRetiring && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>{isRetiring ? "Retiring Plan..." : "Confirm & Retire Plan"}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,10 +4,42 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { PartnerDetailPage } from "../pages/PartnerDetailPage";
 import { organizationApi } from "../api/organization.api";
 import { locationApi } from "../api/location.api";
+import { AuthContext } from "../context/auth-context";
+
+const mockAdminUser = {
+  id: "u-admin",
+  first_name: "Super",
+  last_name: "Admin",
+  email: "superadmin@onlatur.com",
+  isSuperAdmin: true,
+  role_details: {
+    id: "r-admin",
+    name: "Super Administrator",
+    key: "super_admin",
+  },
+  permissions: [],
+};
+
+const renderWithProviders = (ui: React.ReactElement) => {
+  return render(
+    <AuthContext.Provider
+      value={{
+        user: mockAdminUser as any,
+        token: "fake-token",
+        loading: false,
+        login: vi.fn(),
+        register: vi.fn(),
+        logout: vi.fn(),
+      }}
+    >
+      {ui}
+    </AuthContext.Provider>
+  );
+};
 
 describe("PartnerDetailPage Component", () => {
   const renderComponent = () => {
-    return render(
+    return renderWithProviders(
       <MemoryRouter>
         <PartnerDetailPage />
       </MemoryRouter>
@@ -120,7 +152,7 @@ describe("PartnerDetailPage Component", () => {
     });
 
     const renderWithOrgId = (orgId = "org-1234-abcd") => {
-      return render(
+      return renderWithProviders(
         <MemoryRouter initialEntries={[`/organizations/${orgId}`]}>
           <Routes>
             <Route path="/organizations/:org_id" element={<PartnerDetailPage />} />

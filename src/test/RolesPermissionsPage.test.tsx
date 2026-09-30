@@ -3,6 +3,21 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { RolesPermissionsPage, DEFAULT_FEATURES } from "../pages/RolesPermissionsPage";
 import { roleApi } from "../api/role.api";
+import { AuthContext } from "../context/auth-context";
+
+const mockAdminUser = {
+  id: "u-admin",
+  first_name: "Super",
+  last_name: "Admin",
+  email: "superadmin@onlatur.com",
+  isSuperAdmin: true,
+  role_details: {
+    id: "r-admin",
+    name: "Super Administrator",
+    key: "super_admin",
+  },
+  permissions: [],
+};
 
 vi.mock("../api/role.api", () => ({
   roleApi: {
@@ -67,9 +82,20 @@ describe("RolesPermissionsPage Component (Feature-by-Feature Access Control with
 
   const renderComponent = (initialRoute = "/access-control/policies") => {
     return render(
-      <MemoryRouter initialEntries={[initialRoute]}>
-        <RolesPermissionsPage />
-      </MemoryRouter>
+      <AuthContext.Provider
+        value={{
+          user: mockAdminUser as any,
+          token: "fake-token",
+          loading: false,
+          login: vi.fn(),
+          register: vi.fn(),
+          logout: vi.fn(),
+        }}
+      >
+        <MemoryRouter initialEntries={[initialRoute]}>
+          <RolesPermissionsPage />
+        </MemoryRouter>
+      </AuthContext.Provider>
     );
   };
 

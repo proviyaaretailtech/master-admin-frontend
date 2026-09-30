@@ -143,14 +143,26 @@ export const DashboardLayout: React.FC = () => {
 
   // Navigation Items: Commercials (matches screenshots 1 & 2)
   const commercialsSubItems = [
-    { name: "Plans", path: "/commercials/plans" },
-    { name: "Packs", path: "/commercials/packs" },
-    { name: "Add-ons", path: "/commercials/add-ons" },
-    { name: "Subscriptions", path: "/commercials/subscriptions" },
-    { name: "Entitlements", path: "/commercials/entitlements" },
-    { name: "Usage", path: "/commercials/usage" },
-    { name: "Billing", path: "/commercials/billing" },
-  ];
+    {
+      name: "Plans",
+      path: "/commercials/plans",
+      visible: can("feat_commercial_plans", "view_plans"),
+    },
+    {
+      name: "Packs",
+      path: "/commercials/packs",
+      visible: can("feat_commercial_packs", "view_packs"),
+    },
+    {
+      name: "Add-ons",
+      path: "/commercials/add-ons",
+      visible: can("feat_commercial_addons", "view_addons"),
+    },
+    { name: "Subscriptions", path: "/commercials/subscriptions", visible: true },
+    { name: "Entitlements", path: "/commercials/entitlements", visible: true },
+    { name: "Usage", path: "/commercials/usage", visible: true },
+    { name: "Billing", path: "/commercials/billing", visible: true },
+  ].filter((item) => item.visible);
 
   // Other System Domains
   const systemDomains = [
@@ -358,55 +370,61 @@ export const DashboardLayout: React.FC = () => {
             )}
 
             {/* 3. Commercials Section (Plans, Packs, Add-ons, Subscriptions, Entitlements, Usage, Billing) */}
-            <div>
-              <button
-                type="button"
-                onClick={() => setIsCommercialsExpanded(!isCommercialsExpanded)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
-                  isCommercialsActive
-                    ? "bg-[#EEF9E8] text-[#3E8800]"
-                    : "text-slate-700 hover:bg-slate-50"
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Landmark
-                    className={`w-4 h-4 ${isCommercialsActive ? "text-[#4FA800]" : "text-slate-500"}`}
-                  />
-                  <span>Commercials</span>
-                </div>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                    isCommercialsExpanded ? "rotate-0 text-[#4FA800]" : "-rotate-90 text-slate-400"
+            {commercialsSubItems.length > 0 && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setIsCommercialsExpanded(!isCommercialsExpanded)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                    isCommercialsActive
+                      ? "bg-[#EEF9E8] text-[#3E8800]"
+                      : "text-slate-700 hover:bg-slate-50"
                   }`}
-                />
-              </button>
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Landmark
+                      className={`w-4 h-4 ${isCommercialsActive ? "text-[#4FA800]" : "text-slate-500"}`}
+                    />
+                    <span>Commercials</span>
+                  </div>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      isCommercialsExpanded ? "rotate-0 text-[#4FA800]" : "-rotate-90 text-slate-400"
+                    }`}
+                  />
+                </button>
 
-              {/* Commercials Submenu Items */}
-              {isCommercialsExpanded && (
-                <div className="mt-1 ml-5 pl-2 border-l border-slate-200/80 space-y-0.5">
-                  {commercialsSubItems.map((sub) => {
-                    const isActive =
-                      location.pathname === sub.path ||
-                      (sub.name === "Plans" &&
-                        (location.pathname === "/commercials" ||
-                          location.pathname.startsWith("/commercials/plans")));
-                    return (
-                      <Link
-                        key={sub.name}
-                        to={sub.path}
-                        className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${
-                          isActive
-                            ? "bg-[#DEF5CE] text-[#337400] font-bold"
-                            : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium"
-                        }`}
-                      >
-                        {sub.name}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                {/* Commercials Submenu Items */}
+                {isCommercialsExpanded && (
+                  <div className="mt-1 ml-5 pl-2 border-l border-slate-200/80 space-y-0.5">
+                    {commercialsSubItems.map((sub) => {
+                      const isActive =
+                        location.pathname === sub.path ||
+                        (sub.name === "Plans" &&
+                          (location.pathname === "/commercials" ||
+                            location.pathname.startsWith("/commercials/plans"))) ||
+                        (sub.name === "Packs" &&
+                          location.pathname.startsWith("/commercials/packs")) ||
+                        (sub.name === "Add-ons" &&
+                          location.pathname.startsWith("/commercials/add-ons"));
+                      return (
+                        <Link
+                          key={sub.name}
+                          to={sub.path}
+                          className={`block px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                            isActive
+                              ? "bg-[#DEF5CE] text-[#337400] font-bold"
+                              : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 font-medium"
+                          }`}
+                        >
+                          {sub.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* 4. Other System Domains */}
             {systemDomains.map((domain) => {

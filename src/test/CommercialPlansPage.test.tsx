@@ -182,4 +182,76 @@ describe("CommercialPlansPage Component (Zero-Static-Data & RBAC Enforced)", () 
       ).toBeInTheDocument();
     });
   });
+
+  it("opens confirmation modal and calls planApi.retire when user confirms plan retirement", async () => {
+    const mockPlans: CommercialPlanItem[] = [
+      {
+        id: "pl-retire-1",
+        plan_code: "starter",
+        name: "Starter Monthly Plan",
+        version: "v1.0",
+        version_type: "Active",
+        status: "Published",
+        price: 499,
+        currency: "INR",
+        cadence: "Monthly",
+        tax_note: "Exclusive of GST",
+        trial_days: 7,
+        effective_date: "2026-01-01",
+        locations_limit: 1,
+        users_limit: 5,
+        is_unlimited_locations: false,
+        is_unlimited_users: false,
+        modules: ["MODORG"],
+        created_by: null,
+        updated_by: null,
+        assignments_count: 3,
+        created_at: "2026-01-01T00:00:00Z",
+        updated_at: "2026-01-01T00:00:00Z",
+      },
+    ];
+
+    vi.mocked(planApi.getAll).mockResolvedValue({ message: "OK", plans: mockPlans, total: 1 });
+    vi.mocked(moduleApi.getAll).mockResolvedValue({
+      message: "OK",
+      modules: [
+        {
+          id: "m-1",
+          key: "MODORG",
+          name: "Organization Management",
+          category: "Core",
+          description: "",
+          is_active: true,
+          created_at: "",
+          updated_at: "",
+        },
+      ],
+    });
+    vi.mocked(planApi.retire).mockResolvedValueOnce({
+      message: "Retired",
+      plan: { ...mockPlans[0], status: "Retired" },
+    });
+
+    renderWithProviders(<CommercialPlansPage />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Starter Monthly Plan")).toBeInTheDocument();
+      expect(screen.getByText("Retire")).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Retire"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Retire Commercial Plan")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /Confirm & Retire Plan/i })
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Confirm & Retire Plan/i }));
+
+    await waitFor(() => {
+      expect(planApi.retire).toHaveBeenCalledWith("pl-retire-1");
+    });
+  });
 });

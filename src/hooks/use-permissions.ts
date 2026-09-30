@@ -17,9 +17,9 @@ export const usePermissions = (): UsePermissionsReturn => {
   const authContext = useContext(AuthContext);
   const user = authContext?.user;
 
-  // If user is superadmin, or in mock test contexts without explicit user object
+  // Resolve isSuperAdmin strictly when an authenticated user exists
   const isSuperAdmin = Boolean(
-    !user || user.isSuperAdmin || user.role_details?.key === "super_admin"
+    user && (user.isSuperAdmin || user.role_details?.key === "super_admin")
   );
 
   const permissions: FeaturePermission[] = user?.permissions || [];
@@ -28,8 +28,13 @@ export const usePermissions = (): UsePermissionsReturn => {
    * Checks whether the current user is permitted to access a given feature and optional granular action.
    */
   const can = (featureId: string, actionKey?: string): boolean => {
-    // If no user context (e.g. testing without auth wrapper) or super-admin with unconfigured role
-    if (!user || (isSuperAdmin && (!user.permissions || user.permissions.length === 0))) {
+    // Fail-secure: no user context => strictly deny access
+    if (!user) {
+      return false;
+    }
+
+    // Super Admin has unrestricted bypass across all features and actions
+    if (isSuperAdmin) {
       return true;
     }
 

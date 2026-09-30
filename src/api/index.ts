@@ -3,3 +3,7 @@ export * from "./user.api";
 export * from "./organization.api";
 export * from "./location.api";
 export * from "./role.api";
+export * from "./plan.api";
+export * from "./module.api";
+export * from "./pack.api";
+export * from "./addon.api";
