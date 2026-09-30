@@ -156,8 +156,16 @@ describe("AddonEditorPage Component", () => {
       expect(screen.getByText("Platform Plan Compatibility")).toBeInTheDocument();
     });
 
-    // Initially Starter Plan is incompatible
-    expect(screen.getByText("Incompatible (Base Limit Lock)")).toBeInTheDocument();
+    // Initially Starter Plan is incompatible — use flexible matcher for text split across elements
+    expect(
+      screen.getByText((content, element) => {
+        return (
+          element?.tagName === "BUTTON" &&
+          (element.textContent ?? "").includes("Incompatible") &&
+          (element.textContent ?? "").includes("Base Limit Lock")
+        );
+      })
+    ).toBeInTheDocument();
 
     // Click Starter Plan row to toggle to compatible
     const starterPlanRow = screen.getByText("Starter Plan v1.0");
