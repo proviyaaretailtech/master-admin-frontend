@@ -29,8 +29,8 @@ export const PermissionRoute: React.FC<PermissionRouteProps> = ({
     anyOf && anyOf.length > 0
       ? anyOf.some((req) => can(req.featureId, req.actionKey))
       : featureId
-      ? can(featureId, actionKey)
-      : false;
+        ? can(featureId, actionKey)
+        : false;
 
   if (!isAllowed) {
     return <AccessDenied featureName={featureName} />;

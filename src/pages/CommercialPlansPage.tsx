@@ -565,12 +565,19 @@ export const CommercialPlansPage: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 font-medium">Active Subscriptions:</span>
-                <span className="font-semibold text-slate-800">{planToRetire.assignmentsLabel}</span>
+                <span className="font-semibold text-slate-800">
+                  {planToRetire.assignmentsLabel}
+                </span>
               </div>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to retire <strong className="text-slate-900 font-semibold">&quot;{planToRetire.name}&quot;</strong>? Existing organizations will continue on this plan uninterrupted, but new organizations cannot be assigned to it.
+              Are you sure you want to retire{" "}
+              <strong className="text-slate-900 font-semibold">
+                &quot;{planToRetire.name}&quot;
+              </strong>
+              ? Existing organizations will continue on this plan uninterrupted, but new
+              organizations cannot be assigned to it.
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">

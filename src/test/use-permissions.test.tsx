@@ -94,9 +94,7 @@ describe("usePermissions Hook (Fail-Secure & Super Admin Bypass)", () => {
           pagePath: "/commercials/plans",
           description: "",
           accessLevel: "none",
-          actions: [
-            { key: "retire_plan", label: "", description: "", enabled: false },
-          ],
+          actions: [{ key: "retire_plan", label: "", description: "", enabled: false }],
         },
       ],
     };

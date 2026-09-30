@@ -104,7 +104,9 @@ export const addonApi = {
   /**
    * Create new commercial add-on
    */
-  async create(payload: CreateAddonPayload): Promise<{ message: string; addon: CommercialAddonItem }> {
+  async create(
+    payload: CreateAddonPayload
+  ): Promise<{ message: string; addon: CommercialAddonItem }> {
     const res = await apiClient.post<{ message: string; addon: CommercialAddonItem }>(
       "/commercials/add-ons",
       payload

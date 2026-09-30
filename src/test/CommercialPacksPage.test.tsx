@@ -176,9 +176,7 @@ describe("CommercialPacksPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText("No Commercial Feature Packs Found")).toBeInTheDocument();
-      expect(
-        screen.getByText(/Zero static data is loaded/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Zero static data is loaded/i)).toBeInTheDocument();
     });
 
     // Make sure table headers are not rendered in empty state
@@ -323,9 +321,7 @@ describe("CommercialPacksPage", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Retire Feature Pack")).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /Confirm & Retire Pack/i })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Confirm & Retire Pack/i })).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole("button", { name: /Confirm & Retire Pack/i }));

@@ -389,7 +389,9 @@ export const DashboardLayout: React.FC = () => {
                   </div>
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                      isCommercialsExpanded ? "rotate-0 text-[#4FA800]" : "-rotate-90 text-slate-400"
+                      isCommercialsExpanded
+                        ? "rotate-0 text-[#4FA800]"
+                        : "-rotate-90 text-slate-400"
                     }`}
                   />
                 </button>

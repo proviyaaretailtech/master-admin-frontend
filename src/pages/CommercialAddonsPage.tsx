@@ -29,7 +29,7 @@ export const CommercialAddonsPage: React.FC = () => {
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  
+
   // Custom Confirmation Modals
   const [addonToRetire, setAddonToRetire] = useState<CommercialAddonItem | null>(null);
   const [isRetiring, setIsRetiring] = useState(false);
@@ -41,10 +41,7 @@ export const CommercialAddonsPage: React.FC = () => {
   // Close filter dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        filterDropdownRef.current &&
-        !filterDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target as Node)) {
         setIsFilterDropdownOpen(false);
       }
     };
@@ -58,8 +55,7 @@ export const CommercialAddonsPage: React.FC = () => {
     try {
       const [addonsRes, categoriesRes] = await Promise.all([
         addonApi.getAll({
-          category:
-            selectedCategory !== "All Commercial Categories" ? selectedCategory : undefined,
+          category: selectedCategory !== "All Commercial Categories" ? selectedCategory : undefined,
         }),
         addonApi.getCategories().catch(() => ({ message: "OK", categories: [] })),
       ]);
@@ -312,9 +308,7 @@ export const CommercialAddonsPage: React.FC = () => {
                     </td>
 
                     {/* CATEGORY */}
-                    <td className="py-4 px-4 text-slate-600 font-normal">
-                      {addon.category}
-                    </td>
+                    <td className="py-4 px-4 text-slate-600 font-normal">{addon.category}</td>
 
                     {/* COMPATIBILITY */}
                     <td className="py-4 px-4 text-slate-600 font-normal">
@@ -340,8 +334,8 @@ export const CommercialAddonsPage: React.FC = () => {
                           addon.status === "Published"
                             ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                             : addon.status === "Draft"
-                            ? "bg-slate-100 text-slate-600 border-slate-200"
-                            : "bg-amber-50 text-amber-700 border-amber-200"
+                              ? "bg-slate-100 text-slate-600 border-slate-200"
+                              : "bg-amber-50 text-amber-700 border-amber-200"
                         }`}
                       >
                         {addon.status}
@@ -453,7 +447,11 @@ export const CommercialAddonsPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 font-medium">Unit Price:</span>
                 <span className="font-semibold text-slate-800">
-                  {formatPrice(addonToPublish.price, addonToPublish.currency, addonToPublish.unit_label)}
+                  {formatPrice(
+                    addonToPublish.price,
+                    addonToPublish.currency,
+                    addonToPublish.unit_label
+                  )}
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -465,7 +463,8 @@ export const CommercialAddonsPage: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Once published, tenant organizations with compatible base plans will be able to provision this add-on.
+              Once published, tenant organizations with compatible base plans will be able to
+              provision this add-on.
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
@@ -525,7 +524,12 @@ export const CommercialAddonsPage: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to retire <strong className="text-slate-900 font-semibold">&quot;{addonToRetire.name}&quot;</strong>? Existing tenant organizations will retain their current active allocations, but no new purchases will be permitted.
+              Are you sure you want to retire{" "}
+              <strong className="text-slate-900 font-semibold">
+                &quot;{addonToRetire.name}&quot;
+              </strong>
+              ? Existing tenant organizations will retain their current active allocations, but no
+              new purchases will be permitted.
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">

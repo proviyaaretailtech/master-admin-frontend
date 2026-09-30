@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Loader2,
-  AlertCircle,
-  CheckCircle2,
-  AlertTriangle,
-  X,
-} from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle2, AlertTriangle, X } from "lucide-react";
 import { addonApi, CreateAddonPayload } from "../api/addon.api";
 import { planApi, CommercialPlanItem } from "../api/plan.api";
 import { usePermissions } from "../hooks/use-permissions";
@@ -326,7 +320,8 @@ export const AddonEditorPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#D97706] shrink-0" />
             <span>
-              <strong>Warning:</strong> Modifying CADENCE to &quot;{cadence}&quot; will auto-retire the legacy &quot;Quarterly Location&quot; pack active for 14 clients.
+              <strong>Warning:</strong> Modifying CADENCE to &quot;{cadence}&quot; will auto-retire
+              the legacy &quot;Quarterly Location&quot; pack active for 14 clients.
             </span>
           </div>
           <button
@@ -551,7 +546,8 @@ export const AddonEditorPage: React.FC = () => {
             <div className="space-y-2.5 pt-1">
               {platformPlansList.length === 0 ? (
                 <div className="p-4 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-center text-xs text-slate-500">
-                  No published plans available. Only published platform plans can be configured for add-on compatibility.
+                  No published plans available. Only published platform plans can be configured for
+                  add-on compatibility.
                 </div>
               ) : (
                 platformPlansList.map((plan) => {
@@ -699,7 +695,10 @@ export const AddonEditorPage: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to publish <strong className="text-slate-900 font-semibold">&quot;{name}&quot;</strong>? Tenant organizations with compatible platform plans will immediately be able to purchase and provision this add-on.
+              Are you sure you want to publish{" "}
+              <strong className="text-slate-900 font-semibold">&quot;{name}&quot;</strong>? Tenant
+              organizations with compatible platform plans will immediately be able to purchase and
+              provision this add-on.
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">

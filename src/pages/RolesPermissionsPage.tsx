@@ -305,8 +305,7 @@ export const DEFAULT_FEATURES: FeaturePermission[] = [
       {
         key: "create_pack",
         label: "Create Feature Pack",
-        description:
-          "Configure new add-on feature packs with pricing and compatible tier plans",
+        description: "Configure new add-on feature packs with pricing and compatible tier plans",
         enabled: true,
       },
       {
@@ -375,13 +374,15 @@ export const DEFAULT_FEATURES: FeaturePermission[] = [
       {
         key: "retire_addon",
         label: "Retire Add-on",
-        description: "Retire active add-ons to restrict new purchases while preserving existing client subscriptions",
+        description:
+          "Retire active add-ons to restrict new purchases while preserving existing client subscriptions",
         enabled: true,
       },
       {
         key: "delete_addon",
         label: "Delete Draft Add-on",
-        description: "Permanently remove unpublished draft add-ons not assigned to any organizations",
+        description:
+          "Permanently remove unpublished draft add-ons not assigned to any organizations",
         enabled: true,
       },
     ],

@@ -38,10 +38,7 @@ export const CommercialPacksPage: React.FC = () => {
   // Close filter dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        filterDropdownRef.current &&
-        !filterDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target as Node)) {
         setIsFilterDropdownOpen(false);
       }
     };
@@ -301,7 +298,8 @@ export const CommercialPacksPage: React.FC = () => {
           </h3>
           <p className="text-xs text-slate-500 max-w-md mb-5">
             Zero static data is loaded. Feature packs allow you to bundle advanced platform
-            capabilities (such as Custom SQL reporting or Multi-location sync) as monetizable add-ons.
+            capabilities (such as Custom SQL reporting or Multi-location sync) as monetizable
+            add-ons.
           </p>
           {canCreate && (
             <button
@@ -480,12 +478,19 @@ export const CommercialPacksPage: React.FC = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500 font-medium">Assigned Organizations:</span>
-                <span className="font-semibold text-slate-800">{packToRetire.assigned_count} Orgs</span>
+                <span className="font-semibold text-slate-800">
+                  {packToRetire.assigned_count} Orgs
+                </span>
               </div>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Are you sure you want to retire <strong className="text-slate-900 font-semibold">&quot;{packToRetire.name}&quot;</strong>? Existing organizations will retain their pack access, but new subscriptions will be restricted from adopting it.
+              Are you sure you want to retire{" "}
+              <strong className="text-slate-900 font-semibold">
+                &quot;{packToRetire.name}&quot;
+              </strong>
+              ? Existing organizations will retain their pack access, but new subscriptions will be
+              restricted from adopting it.
             </p>
 
             <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">

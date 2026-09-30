@@ -53,10 +53,7 @@ export const PackEditorPage: React.FC = () => {
   // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        planDropdownRef.current &&
-        !planDropdownRef.current.contains(event.target as Node)
-      ) {
+      if (planDropdownRef.current && !planDropdownRef.current.contains(event.target as Node)) {
         setIsPlanDropdownOpen(false);
       }
     };
@@ -90,7 +87,9 @@ export const PackEditorPage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const plansRes = await planApi.getAll().catch(() => ({ message: "OK", plans: [], total: 0 }));
+        const plansRes = await planApi
+          .getAll()
+          .catch(() => ({ message: "OK", plans: [], total: 0 }));
         setPlans(plansRes.plans || []);
 
         if (isEditMode && id) {
@@ -149,7 +148,10 @@ export const PackEditorPage: React.FC = () => {
 
     let code = packCode.trim();
     if (!code) {
-      code = `pk-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+      code = `pk-${name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")}`;
     }
 
     setIsSaving(true);
@@ -279,7 +281,10 @@ export const PackEditorPage: React.FC = () => {
       )}
 
       {/* Pack Configuration Details Card */}
-      <form onSubmit={handleSave} className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-5">
+      <form
+        onSubmit={handleSave}
+        className="bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-5"
+      >
         <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
           Pack Configuration Details
         </h2>
@@ -512,7 +517,8 @@ export const PackEditorPage: React.FC = () => {
           )}
 
           <p className="text-[11px] text-slate-400 mt-1.5">
-            Select plans before plan is eligible to run with this feature pack. Leave empty to allow compatibility across all commercial plans.
+            Select plans before plan is eligible to run with this feature pack. Leave empty to allow
+            compatibility across all commercial plans.
           </p>
         </div>
 

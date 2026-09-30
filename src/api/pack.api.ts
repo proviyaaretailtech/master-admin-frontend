@@ -58,9 +58,11 @@ export const packApi = {
 
     const qs = queryParams.toString();
     const url = `/commercials/packs${qs ? `?${qs}` : ""}`;
-    const res = await apiClient.get<{ message: string; packs: CommercialPackItem[]; total: number }>(
-      url
-    );
+    const res = await apiClient.get<{
+      message: string;
+      packs: CommercialPackItem[];
+      total: number;
+    }>(url);
     return res.data;
   },
 
@@ -123,9 +125,7 @@ export const packApi = {
    * Delete pack
    */
   async delete(id: string): Promise<{ id: string; message: string }> {
-    const res = await apiClient.delete<{ id: string; message: string }>(
-      `/commercials/packs/${id}`
-    );
+    const res = await apiClient.delete<{ id: string; message: string }>(`/commercials/packs/${id}`);
     return res.data;
   },
 };

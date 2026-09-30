@@ -243,9 +243,7 @@ describe("CommercialPlansPage Component (Zero-Static-Data & RBAC Enforced)", () 
 
     await waitFor(() => {
       expect(screen.getByText("Retire Commercial Plan")).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /Confirm & Retire Plan/i })
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Confirm & Retire Plan/i })).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByRole("button", { name: /Confirm & Retire Plan/i }));
