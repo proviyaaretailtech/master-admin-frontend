@@ -158,7 +158,7 @@ describe("AddonEditorPage Component", () => {
 
     // Initially Starter Plan is incompatible — use flexible matcher for text split across elements
     expect(
-      screen.getByText((content, element) => {
+      screen.getByText((_content, element) => {
         return (
           element?.tagName === "BUTTON" &&
           (element.textContent ?? "").includes("Incompatible") &&
