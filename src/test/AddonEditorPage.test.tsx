@@ -116,6 +116,7 @@ describe("AddonEditorPage Component", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Add-on Metadata & Description")).toBeInTheDocument();
+      expect(screen.getByText("Growth Plan v2.1")).toBeInTheDocument();
     });
 
     // Header elements
@@ -152,20 +153,19 @@ describe("AddonEditorPage Component", () => {
   it("toggles plan compatibility between Fully Compatible and Incompatible on click", async () => {
     renderComponent(mockSuperAdminUser);
 
+    // Wait for async planApi.getAll to resolve and render Starter Plan with Incompatible badge
     await waitFor(() => {
-      expect(screen.getByText("Platform Plan Compatibility")).toBeInTheDocument();
+      expect(screen.getByText("Starter Plan v1.0")).toBeInTheDocument();
+      expect(
+        screen.getByText((_content, element) => {
+          return (
+            element?.tagName === "BUTTON" &&
+            (element.textContent ?? "").includes("Incompatible") &&
+            (element.textContent ?? "").includes("Base Limit Lock")
+          );
+        })
+      ).toBeInTheDocument();
     });
-
-    // Initially Starter Plan is incompatible — use flexible matcher for text split across elements
-    expect(
-      screen.getByText((_content, element) => {
-        return (
-          element?.tagName === "BUTTON" &&
-          (element.textContent ?? "").includes("Incompatible") &&
-          (element.textContent ?? "").includes("Base Limit Lock")
-        );
-      })
-    ).toBeInTheDocument();
 
     // Click Starter Plan row to toggle to compatible
     const starterPlanRow = screen.getByText("Starter Plan v1.0");
