@@ -2,7 +2,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { ApiError } from "./api-error";
 import { endSession, getAccessToken, refreshSession } from "./session";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/_s";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

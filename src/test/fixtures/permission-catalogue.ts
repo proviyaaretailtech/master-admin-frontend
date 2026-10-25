@@ -2,7 +2,7 @@ import type { FeaturePermission } from "../../pages/RolesPermissionsPage";
 
 /**
  * Mock response of GET /roles/catalog for component tests: a few features, all off, in the backend's
- * shape. The real catalogue is the backend registry (backend/src/utils/permission-adapter.ts);
+ * shape. The real catalogue is the backend registry (master-admin-api: src/utils/permission-adapter.ts);
  * permission-parity.test.ts checks the frontend against that file.
  */
 const a = (key: string, label: string) => ({ key, label, description: label, enabled: false });

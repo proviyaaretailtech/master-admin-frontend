@@ -38,7 +38,7 @@ const outIdx = args.indexOf("--out");
 const reportPath =
   outIdx >= 0
     ? path.resolve(args[outIdx + 1])
-    : path.resolve(root, "../../docs/I18N_STATUS_master-admin.md");
+    : path.resolve(root, "../docs/I18N_STATUS_master-admin.md");
 
 const allowlistFile = path.join(root, "scripts/i18n-allowlist.json");
 const allowlist = fs.existsSync(allowlistFile)

@@ -5,14 +5,14 @@ import axios from "axios";
  *
  *  - The access token (Supabase JWT, ~1 hour) lives in this module, not in localStorage.
  *  - The refresh token never reaches JavaScript: the backend keeps it in an httpOnly cookie scoped to
- *    /api/auth and rotates it on every POST /auth/refresh.
+ *    /_s/auth (the proxy maps it from the Master server's /api/auth) and rotates it on every POST /auth/refresh.
  *  - refreshSession() is single-flight: any number of callers (parallel 401s, the expiry timer, the app
  *    start-up) share one request.
  *  - endSession("expired") is what every "the session is gone" path ends in; the auth context listens and
  *    sends the person to the sign-in page with a "session ended" message.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/_s";
 /** Key the old build kept the access token under; removed on start-up. */
 const LEGACY_TOKEN_KEY = "token";
 
