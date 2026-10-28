@@ -378,7 +378,8 @@
       "apiWebhooks": "API & webhooks",
       "partnerApplications": "Partner applications",
       "orderHolds": "Held orders",
-      "customers": "Customers"
+      "customers": "Customers",
+      "role_sets": "Role sets"
     },
     "feature": {
       "usersManagement": "Users Management",
@@ -2717,6 +2718,33 @@
         "note": "Add an internal note",
         "resolve": "Resolve this request: what was done?"
       }
+    },
+    "roleSets": {
+      "title": "Role sets",
+      "subtitle": "Tick which staff roles each kind of store may use. Nothing is ticked until you decide. A business gets its set when you apply it on its application.",
+      "role": "Role",
+      "type": {
+        "restaurant": "Restaurant",
+        "store": "Store",
+        "service": "Service",
+        "logistic": "Logistics"
+      },
+      "toggle": "{{role}} for {{type}}",
+      "failed": "That did not go through. Try again."
+    },
+    "orgRoles": {
+      "title": "Roles and test login",
+      "granted": "Roles given: {{roles}}",
+      "noGrants": "No roles given yet.",
+      "test": "test login",
+      "storeType": "Store type",
+      "apply": "Apply approved roles",
+      "testRole": "Test login role",
+      "owner": "Owner",
+      "createTest": "Create test login",
+      "made": "Test login {{email}}, password:",
+      "once": "(shown only now: copy it)",
+      "failed": "That did not go through. Try again."
     }
   }
 }

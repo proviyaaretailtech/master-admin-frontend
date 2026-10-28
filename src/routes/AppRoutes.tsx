@@ -22,6 +22,7 @@ import { ChangePlanPage } from "../pages/master/ChangePlanPage";
 import { InvitationsPage } from "../pages/master/InvitationsPage";
 import { CustomersPage } from "../pages/master/CustomersPage";
 import { SupportPage } from "../pages/master/SupportPage";
+import { RoleSetsPage } from "../pages/master/RoleSetsPage";
 import { RidersPage } from "../pages/master/RidersPage";
 import { PartnerApplicationsPage } from "../pages/master/PartnerApplicationsPage";
 import { OrderHoldsPage } from "../pages/master/OrderHoldsPage";
@@ -567,6 +568,18 @@ export const AppRoutes: React.FC = () => {
                 featureNameKey="nav.feature.invitations"
               >
                 <InvitationsPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/access-control/role-sets"
+            element={
+              <PermissionRoute
+                featureId={FEAT.ROLE_SETS.id}
+                actionKey={FEAT.ROLE_SETS.view}
+                featureNameKey="nav.items.role_sets"
+              >
+                <RoleSetsPage />
               </PermissionRoute>
             }
           />

@@ -28,6 +28,10 @@ export async function httpPatch<T = unknown>(url: string, body?: unknown): Promi
   const res = await apiClient.patch<T>(url, body ?? {});
   return res.data;
 }
+export async function httpDelete<T = unknown>(url: string): Promise<T> {
+  const res = await apiClient.delete<T>(url);
+  return res.data;
+}
 
 export interface Page<T> {
   items: T[];

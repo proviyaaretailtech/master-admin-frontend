@@ -103,6 +103,12 @@ export const NAV_SECTIONS: NavSection[] = [
         feature: { id: FEAT.AUDIT.id, action: FEAT.AUDIT.view },
       },
       {
+        id: "role_sets",
+        labelKey: "nav.items.role_sets",
+        path: "/access-control/role-sets",
+        feature: { id: FEAT.ROLE_SETS.id, action: FEAT.ROLE_SETS.view },
+      },
+      {
         id: "customers",
         labelKey: "nav.items.customers",
         path: "/customers",

@@ -48,6 +48,12 @@ export const FEAT = {
   AUDIT: { id: "feat_audit_compliance", view: "view_audit_logs" },
   CUSTOMERS: { id: "feat_customers", view: "view_customers" },
   SUPPORT: { id: "feat_support", view: "view_support", handle: "handle_support" },
+  ROLE_SETS: {
+    id: "feat_role_sets",
+    view: "view_role_sets",
+    manage: "manage_role_sets",
+    testLogin: "create_test_login",
+  },
   INTEGRATIONS: {
     id: "feat_integrations",
     view: "view_integrations",

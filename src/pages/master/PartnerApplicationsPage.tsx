@@ -28,6 +28,7 @@ import {
 } from "../../components/master/ui";
 import { useAction, useResource } from "../../components/master/useResource";
 import { PartnerVerification, readyToApprove } from "../../components/master/PartnerVerification";
+import { OrgRolesPanel } from "../../components/master/OrgRolesPanel";
 
 /** Only submitted or reviewing applications can be decided; the database enforces it again. */
 const DECIDABLE = new Set(["submitted", "reviewing"]);
@@ -182,6 +183,9 @@ export const ApplicationDrawer: React.FC<{
                 )}
               </Section>
               <PartnerVerification a={a} onChanged={res.reload} />
+              {a.organization_id && (
+                <OrgRolesPanel org={a.organization_id} partnerType={a.partner_type} />
+              )}
               <Section title={t("m.applications.section.business")}>
                 <KV label={t("common.name")}>{a.business_name}</KV>
                 <KV label={t("m.applications.partnerType")}>
