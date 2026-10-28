@@ -4,7 +4,7 @@
  * registry, which is also the catalogue the role editor offers (GET /roles/catalog). An id that is not
  * there could never be granted, so only super admins would ever see that screen or button.
  *
- * The registry is read as text from the sibling master-admin-api checkout (not imported, so the
+ * The registry is read as text from the sibling master-admin-server checkout (not imported, so the
  * frontend build stays independent of the backend); the test is skipped when this repo is checked
  * out on its own.
  */
@@ -14,7 +14,7 @@ import path from "node:path";
 import { FEAT } from "../lib/master-features";
 
 const SRC = path.resolve(__dirname, "..");
-const REGISTRY = path.resolve(SRC, "../../master-admin-api/src/utils/permission-adapter.ts");
+const REGISTRY = path.resolve(SRC, "../../master-admin-server/src/utils/permission-adapter.ts");
 const hasRegistry = fs.existsSync(REGISTRY);
 
 /** feature id -> action keys, parsed from DEFAULT_FEATURES_TEMPLATE. */

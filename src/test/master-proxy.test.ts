@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { masterPathFor, proxyToMaster, rewriteSetCookie, clientIpFromVercel } from "../bff/master-proxy";
 
-const ENV = { MASTER_SERVER_URL: "https://master.internal.test/", INTERNAL_KEY_ADMIN_WEB: "k".repeat(40) };
+const ENV = { MASTER_SERVER_URL: "https://master.internal.test/", INTERNAL_KEY_ADMIN_FRONTEND: "k".repeat(40) };
 
 function upstream(status = 200, headers: Record<string, string | string[]> = {}, body = '{"ok":true}') {
   return vi.fn(async (_url: string | URL | Request, _init?: RequestInit) => {
@@ -38,7 +38,7 @@ describe("panel proxy (/_s → Master server)", () => {
     const [url, init] = fetchImpl.mock.calls[0];
     expect(url).toBe("https://master.internal.test/api/me/context");
     const sent = new Headers(init?.headers);
-    expect(sent.get("x-internal-key")).toBe(ENV.INTERNAL_KEY_ADMIN_WEB);
+    expect(sent.get("x-internal-key")).toBe(ENV.INTERNAL_KEY_ADMIN_FRONTEND);
     expect(sent.get("x-client-ip")).toBe("203.0.113.9");
     expect(sent.get("authorization")).toBe("Bearer t");
     expect(sent.get("origin")).toBe("https://p.test");

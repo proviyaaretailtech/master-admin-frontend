@@ -5,7 +5,7 @@ import { PUBLIC_PREFIX, proxyToMaster, type ProxyEnv } from "./src/bff/master-pr
 
 /**
  * Local development runs the same /_s proxy as production (api/proxy.ts), so the browser never sees the
- * Master server here either. MASTER_SERVER_URL and INTERNAL_KEY_ADMIN_WEB come from .env.local (not
+ * Master server here either. MASTER_SERVER_URL and INTERNAL_KEY_ADMIN_FRONTEND come from .env.local (not
  * committed; no VITE_ prefix, so Vite never puts them in the bundle).
  */
 function masterProxy(env: ProxyEnv): Plugin {
@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => {
       react(),
       masterProxy({
         MASTER_SERVER_URL: env.MASTER_SERVER_URL || "http://localhost:8000",
-        INTERNAL_KEY_ADMIN_WEB: env.INTERNAL_KEY_ADMIN_WEB,
+        INTERNAL_KEY_ADMIN_FRONTEND: env.INTERNAL_KEY_ADMIN_FRONTEND,
       }),
     ],
     resolve: {

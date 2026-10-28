@@ -10,8 +10,8 @@
 export interface ProxyEnv {
   /** e.g. https://api.master-admin.onelocal.co (no trailing /api). */
   MASTER_SERVER_URL?: string;
-  /** This site's key on the Master server (INTERNAL_KEY_ADMIN_WEB there). */
-  INTERNAL_KEY_ADMIN_WEB?: string;
+  /** This site's key on the Master server (INTERNAL_KEY_ADMIN_FRONTEND there). */
+  INTERNAL_KEY_ADMIN_FRONTEND?: string;
 }
 
 /** Query parameter the rewrite uses to carry the path after /_s/. */
@@ -86,7 +86,7 @@ export async function proxyToMaster(
   opts: { clientIp?: string; fetchImpl?: typeof fetch } = {}
 ): Promise<Response> {
   const base = (env.MASTER_SERVER_URL || "").trim().replace(/\/+$/, "");
-  const key = (env.INTERNAL_KEY_ADMIN_WEB || "").trim();
+  const key = (env.INTERNAL_KEY_ADMIN_FRONTEND || "").trim();
   if (!base || key.length < 32) return json(503, { error: "not_configured" });
   if (!METHODS.has(request.method)) return json(405, { error: "method_not_allowed" });
 

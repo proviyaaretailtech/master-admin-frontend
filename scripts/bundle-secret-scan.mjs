@@ -14,7 +14,7 @@ const forbidden = [
   /service_role/,
 ];
 // Values actually configured for this build must not appear either.
-for (const name of ["MASTER_SERVER_URL", "INTERNAL_KEY_ADMIN_WEB"]) {
+for (const name of ["MASTER_SERVER_URL", "INTERNAL_KEY_ADMIN_FRONTEND"]) {
   const value = (process.env[name] || "").trim();
   if (value.length >= 8) forbidden.push(new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 }

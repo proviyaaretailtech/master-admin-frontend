@@ -4,7 +4,7 @@ import { clientIpFromVercel, proxyToMaster } from "../src/bff/master-proxy";
 const handle = (request: Request): Promise<Response> =>
   proxyToMaster(
     request,
-    { MASTER_SERVER_URL: process.env.MASTER_SERVER_URL, INTERNAL_KEY_ADMIN_WEB: process.env.INTERNAL_KEY_ADMIN_WEB },
+    { MASTER_SERVER_URL: process.env.MASTER_SERVER_URL, INTERNAL_KEY_ADMIN_FRONTEND: process.env.INTERNAL_KEY_ADMIN_FRONTEND },
     { clientIp: clientIpFromVercel(request) }
   );
 
