@@ -31,6 +31,10 @@ export const FEAT = {
     view: "view_applications",
     approve: "approve_partner",
     reject: "reject_partner",
+    verifyChecks: "verify_checks",
+    viewDocuments: "view_documents",
+    reviewDocuments: "review_documents",
+    hold: "hold_partner",
   },
   DISPATCH: { id: "feat_dispatch", view: "view_dispatch", manage: "manage_dispatch" },
   FINANCE: {

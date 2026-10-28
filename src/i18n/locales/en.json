@@ -2579,6 +2579,39 @@
       "audit": {
         "partner_application_approved": "Approved",
         "partner_application_rejected": "Rejected"
+      },
+      "verify": {
+        "checks": "Verification checks",
+        "documents": "Documents",
+        "bank": "Bank account",
+        "noDocuments": "No documents uploaded yet.",
+        "noBank": "No bank account added yet.",
+        "verify": "Verify",
+        "fail": "Fail",
+        "reject": "Reject",
+        "view": "View (60 s)",
+        "hold": "Put on hold",
+        "release": "Lift hold",
+        "onHold": "On hold: {{reason}} — {{by}}, {{at}}",
+        "failed": "That did not go through. Try again.",
+        "notReady": "Verify all four checks and every document first",
+        "check": {
+          "individual_identity": "Owner identity",
+          "business_identity": "Business identity",
+          "business_address": "Business address",
+          "bank_ownership": "Bank account ownership"
+        },
+        "doc": {
+          "pan_copy": "PAN card",
+          "business_proof": "Business proof",
+          "food_license": "Food licence (FSSAI)"
+        },
+        "dialog": {
+          "fail": "Fail this check for {{name}}",
+          "reject": "Reject this document from {{name}}",
+          "hold": "Put {{name}} on hold",
+          "release": "Lift the hold on {{name}}"
+        }
       }
     },
     "holds": {

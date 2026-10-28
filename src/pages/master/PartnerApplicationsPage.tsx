@@ -27,6 +27,7 @@ import {
   TextInput,
 } from "../../components/master/ui";
 import { useAction, useResource } from "../../components/master/useResource";
+import { PartnerVerification, readyToApprove } from "../../components/master/PartnerVerification";
 
 /** Only submitted or reviewing applications can be decided; the database enforces it again. */
 const DECIDABLE = new Set(["submitted", "reviewing"]);
@@ -180,6 +181,7 @@ export const ApplicationDrawer: React.FC<{
                   </KV>
                 )}
               </Section>
+              <PartnerVerification a={a} onChanged={res.reload} />
               <Section title={t("m.applications.section.business")}>
                 <KV label={t("common.name")}>{a.business_name}</KV>
                 <KV label={t("m.applications.partnerType")}>
@@ -254,11 +256,17 @@ export const ApplicationDrawer: React.FC<{
                 </section>
               )}
               {buttons.length > 0 && (
-                <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-3">
+                <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
                   {buttons.map((d) => (
                     <Button
                       key={d}
                       variant={d === "approve" ? "primary" : "danger"}
+                      disabled={d === "approve" && !readyToApprove(a)}
+                      title={
+                        d === "approve" && !readyToApprove(a)
+                          ? t("m.applications.verify.notReady")
+                          : undefined
+                      }
                       onClick={() => {
                         action.clear();
                         setPending(d);

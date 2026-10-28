@@ -8,7 +8,15 @@ import { apiErr, limitedUser, page, renderPage } from "./master-helpers";
 
 vi.mock("../api/partner-applications.api", async (orig) => ({
   ...(await orig<object>()),
-  partnerApplicationApi: { list: vi.fn(), get: vi.fn(), decide: vi.fn() },
+  partnerApplicationApi: {
+    list: vi.fn(),
+    get: vi.fn(),
+    decide: vi.fn(),
+    setCheck: vi.fn(),
+    reviewDocument: vi.fn(),
+    viewDocument: vi.fn(),
+    setHold: vi.fn(),
+  },
 }));
 vi.mock("../api/order-holds.api", async (orig) => ({
   ...(await orig<object>()),
@@ -38,6 +46,36 @@ const detail = {
   pin_code: "413512",
   login_match: { found: false, confirmed: false },
   history: [],
+  checks: ["individual_identity", "business_identity", "business_address", "bank_ownership"].map(
+    (kind) => ({
+      kind,
+      status: "verified",
+    })
+  ),
+  documents: [],
+  bank: null,
+  hold: null,
+};
+/** Same application with one check still pending and one document waiting: approval must wait. */
+const unverified = {
+  ...detail,
+  checks: detail.checks.map((c) => (c.kind === "bank_ownership" ? { ...c, status: "pending" } : c)),
+  documents: [
+    {
+      id: "d1",
+      kind: "pan_copy",
+      file_name: "pan.pdf",
+      mime_type: "application/pdf",
+      status: "uploaded",
+    },
+  ],
+  bank: {
+    holder_name: "Asha",
+    bank_name: "State Bank",
+    account_last4: "4321",
+    ifsc: "SBIN0001234",
+    status: "unverified",
+  },
 };
 
 describe("PartnerApplicationsPage", () => {
@@ -109,6 +147,78 @@ describe("PartnerApplicationsPage", () => {
     await within(drawer).findByText("Supermarket");
     expect(within(drawer).queryByRole("button", { name: "Approve" })).toBeNull();
     expect(within(drawer).queryByRole("button", { name: "Reject" })).toBeNull();
+  });
+
+  it("approval waits for every check and document; verify, view and a reasoned reject go to the server", async () => {
+    vi.mocked(partnerApplicationApi.list).mockResolvedValue({
+      ...page([row]),
+      counts: {},
+    } as never);
+    vi.mocked(partnerApplicationApi.get).mockResolvedValue(unverified as never);
+    vi.mocked(partnerApplicationApi.setCheck).mockResolvedValue({} as never);
+    vi.mocked(partnerApplicationApi.reviewDocument).mockResolvedValue({} as never);
+    vi.mocked(partnerApplicationApi.viewDocument).mockResolvedValue({
+      url: "https://files.test/x",
+    });
+    const opened = vi.spyOn(window, "open").mockReturnValue(null);
+    renderPage(<PartnerApplicationsPage />);
+    fireEvent.click(await screen.findByRole("button", { name: /Purshotam/ }));
+    const drawer = await screen.findByRole("dialog");
+    expect(await within(drawer).findByText("Bank account ownership")).toBeInTheDocument();
+    expect(within(drawer).getByText(/•••• 4321/)).toBeInTheDocument();
+    expect(within(drawer).getByRole("button", { name: "Approve" })).toBeDisabled();
+
+    fireEvent.click(within(drawer).getAllByRole("button", { name: "Verify" })[0]);
+    await waitFor(() =>
+      expect(partnerApplicationApi.setCheck).toHaveBeenCalledWith(
+        "a1",
+        "bank_ownership",
+        "verified"
+      )
+    );
+
+    fireEvent.click(within(drawer).getByRole("button", { name: "View (60 s)" }));
+    await waitFor(() =>
+      expect(partnerApplicationApi.viewDocument).toHaveBeenCalledWith("a1", "d1")
+    );
+    expect(opened).toHaveBeenCalledWith("https://files.test/x", "_blank", "noopener,noreferrer");
+
+    fireEvent.click(within(drawer).getAllByRole("button", { name: "Reject" })[0]);
+    const dialogs = await screen.findAllByRole("dialog");
+    const dlg = dialogs[dialogs.length - 1];
+    const confirm = within(dlg).getByRole("button", { name: "Confirm" });
+    expect(confirm).toBeDisabled();
+    fireEvent.change(within(dlg).getByLabelText(/Reason/), { target: { value: "Blurry photo" } });
+    fireEvent.click(confirm);
+    await waitFor(() =>
+      expect(partnerApplicationApi.reviewDocument).toHaveBeenCalledWith(
+        "a1",
+        "d1",
+        "rejected",
+        "Blurry photo"
+      )
+    );
+    opened.mockRestore();
+  });
+
+  it("a viewer sees the checks and documents but no verify, reject or hold buttons", async () => {
+    vi.mocked(partnerApplicationApi.list).mockResolvedValue({
+      ...page([row]),
+      counts: {},
+    } as never);
+    vi.mocked(partnerApplicationApi.get).mockResolvedValue({
+      ...unverified,
+      hold: { platform_hold: false, accepting: true },
+    } as never);
+    renderPage(<PartnerApplicationsPage />, {
+      user: limitedUser([{ id: "feat_partner_review", actions: ["view_applications"] }]),
+    });
+    fireEvent.click(await screen.findByRole("button", { name: /Purshotam/ }));
+    const drawer = await screen.findByRole("dialog");
+    expect(await within(drawer).findByText("Owner identity")).toBeInTheDocument();
+    expect(within(drawer).queryByRole("button", { name: "Verify" })).toBeNull();
+    expect(within(drawer).queryByRole("button", { name: "View (60 s)" })).toBeNull();
+    expect(within(drawer).queryByRole("button", { name: "Put on hold" })).toBeNull();
   });
 
   it("403 on the list shows permission denied", async () => {

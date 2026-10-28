@@ -56,6 +56,54 @@ export interface PartnerApplication extends PartnerApplicationRow {
   /** When the application names no login: the login an approval would link by email. */
   login_match: { found: boolean; confirmed: boolean } | null;
   history: Array<{ id: string; action: string; created_at: string }>;
+  /** The four checks, always all four (a missing one reads as pending). */
+  checks: VerificationCheck[];
+  /** Uploaded documents; the file is opened only through a recorded 60-second link. */
+  documents: ApplicationDocument[];
+  /** Bank account: last four digits only. */
+  bank: ApplicationBank | null;
+  /** Platform hold on the business, once the application has made one. */
+  hold: PartnerHold | null;
+}
+export const CHECK_KINDS = [
+  "individual_identity",
+  "business_identity",
+  "business_address",
+  "bank_ownership",
+] as const;
+export type CheckKind = (typeof CHECK_KINDS)[number];
+export interface VerificationCheck {
+  kind: CheckKind;
+  status: string;
+  note?: string;
+  decided_at?: string;
+  decided_by_name?: string;
+}
+export interface ApplicationDocument {
+  id: string;
+  kind: string;
+  file_name: string;
+  mime_type: string;
+  status: string;
+  review_note?: string;
+  uploaded_at?: string;
+  reviewed_at?: string;
+  reviewed_by_name?: string;
+}
+export interface ApplicationBank {
+  holder_name?: string;
+  bank_name?: string;
+  account_last4?: string;
+  ifsc?: string;
+  account_type?: string;
+  status: string;
+}
+export interface PartnerHold {
+  platform_hold: boolean;
+  platform_hold_reason?: string;
+  platform_hold_at?: string;
+  platform_hold_by_name?: string;
+  accepting: boolean;
 }
 export interface DecisionResult {
   status: string;
@@ -136,8 +184,62 @@ export const partnerApplicationApi = {
         action: String(h.action),
         created_at: String(h.created_at),
       })),
+      checks: ((r.checks as Row[]) ?? []).map((c) => ({
+        kind: String(c.kind) as CheckKind,
+        status: String(c.status ?? "pending"),
+        note: str(c.note),
+        decided_at: str(c.decided_at),
+        decided_by_name: str(c.decided_by_name),
+      })),
+      documents: ((r.documents as Row[]) ?? []).map((d) => ({
+        id: String(d.id),
+        kind: String(d.kind),
+        file_name: String(d.file_name ?? ""),
+        mime_type: String(d.mime_type ?? ""),
+        status: String(d.status ?? "uploaded"),
+        review_note: str(d.review_note),
+        uploaded_at: str(d.uploaded_at),
+        reviewed_at: str(d.reviewed_at),
+        reviewed_by_name: str(d.reviewed_by_name),
+      })),
+      bank: r.bank
+        ? {
+            holder_name: str((r.bank as Row).holder_name),
+            bank_name: str((r.bank as Row).bank_name),
+            account_last4: str((r.bank as Row).account_last4),
+            ifsc: str((r.bank as Row).ifsc),
+            account_type: str((r.bank as Row).account_type),
+            status: String((r.bank as Row).status ?? "unverified"),
+          }
+        : null,
+      hold: r.hold
+        ? {
+            platform_hold: (r.hold as Row).platform_hold === true,
+            platform_hold_reason: str((r.hold as Row).platform_hold_reason),
+            platform_hold_at: str((r.hold as Row).platform_hold_at),
+            platform_hold_by_name: str((r.hold as Row).platform_hold_by_name),
+            accepting: (r.hold as Row).accepting === true,
+          }
+        : null,
     };
   },
+  setCheck: (id: string, kind: CheckKind, status: string, note?: string) =>
+    httpPost<Row>(
+      `/partner-applications/${id}/checks/${kind}`,
+      note ? { status, note } : { status }
+    ),
+  reviewDocument: (id: string, docId: string, status: string, note?: string) =>
+    httpPost<Row>(
+      `/partner-applications/${id}/documents/${docId}/review`,
+      note ? { status, note } : { status }
+    ),
+  /** Records the view, then returns a link that works for 60 seconds. */
+  viewDocument: async (id: string, docId: string): Promise<{ url: string }> => {
+    const r = await httpPost<Row>(`/partner-applications/${id}/documents/${docId}/view`);
+    return { url: String(r.url ?? "") };
+  },
+  setHold: (id: string, hold: boolean, reason: string) =>
+    httpPost<Row>(`/partner-applications/${id}/hold`, { hold, reason }),
   decide: async (
     id: string,
     decision: ApplicationDecision,

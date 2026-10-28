@@ -2579,6 +2579,39 @@
       "audit": {
         "partner_application_approved": "मंज़ूर",
         "partner_application_rejected": "अस्वीकार"
+      },
+      "verify": {
+        "checks": "सत्यापन जाँच",
+        "documents": "दस्तावेज़",
+        "bank": "बैंक खाता",
+        "noDocuments": "अभी कोई दस्तावेज़ अपलोड नहीं हुआ।",
+        "noBank": "अभी कोई बैंक खाता नहीं जोड़ा गया।",
+        "verify": "सत्यापित करें",
+        "fail": "असफल",
+        "reject": "अस्वीकार",
+        "view": "देखें (60 सेकंड)",
+        "hold": "रोक लगाएँ",
+        "release": "रोक हटाएँ",
+        "onHold": "रोक पर: {{reason}} — {{by}}, {{at}}",
+        "failed": "यह नहीं हो पाया। फिर कोशिश करें।",
+        "notReady": "पहले चारों जाँच और हर दस्तावेज़ सत्यापित करें",
+        "check": {
+          "individual_identity": "मालिक की पहचान",
+          "business_identity": "व्यवसाय की पहचान",
+          "business_address": "व्यवसाय का पता",
+          "bank_ownership": "बैंक खाते का स्वामित्व"
+        },
+        "doc": {
+          "pan_copy": "पैन कार्ड",
+          "business_proof": "व्यवसाय का प्रमाण",
+          "food_license": "खाद्य लाइसेंस (FSSAI)"
+        },
+        "dialog": {
+          "fail": "{{name}} की यह जाँच असफल करें",
+          "reject": "{{name}} का यह दस्तावेज़ अस्वीकार करें",
+          "hold": "{{name}} पर रोक लगाएँ",
+          "release": "{{name}} से रोक हटाएँ"
+        }
       }
     },
     "holds": {
