@@ -379,7 +379,8 @@
       "partnerApplications": "Partner applications",
       "orderHolds": "Held orders",
       "customers": "Customers",
-      "role_sets": "Role sets"
+      "role_sets": "Role sets",
+      "popups": "Pop-ups"
     },
     "feature": {
       "usersManagement": "Users Management",
@@ -413,7 +414,8 @@
       "cms": "CMS integration",
       "apiWebhooks": "API & webhooks",
       "partnerApplications": "Partner applications",
-      "orderHolds": "Held orders"
+      "orderHolds": "Held orders",
+      "popups": "Customer app pop-ups"
     },
     "placeholder": {
       "eyebrow": "SYSTEM DOMAIN MODULE",
@@ -2745,6 +2747,173 @@
       "made": "Test login {{email}}, password:",
       "once": "(shown only now: copy it)",
       "failed": "That did not go through. Try again."
+    }
+  },
+  "popupsAdmin": {
+    "eyebrow": "Customer app",
+    "title": "Pop-ups",
+    "subtitle": "Letters, cards and strips shown inside the One Local customer app. Make one, send it for approval, and a second admin puts it live. No app update needed.",
+    "new": "New pop-up",
+    "newTitle": "New pop-up",
+    "editTitle": "Edit draft",
+    "saveDraft": "Save draft",
+    "saved": "Draft saved. Send it for approval when it is ready.",
+    "empty": "No pop-ups here yet",
+    "emptyHint": "Make a welcome letter for new customers, or an offer letter for everyone.",
+    "status": {
+      "all": "All",
+      "draft": "Drafts",
+      "submitted": "Waiting approval",
+      "live": "Live",
+      "ended": "Ended"
+    },
+    "col": {
+      "title": "Title",
+      "format": "Kind",
+      "when": "When it shows",
+      "dates": "Dates",
+      "status": "Status"
+    },
+    "format": {
+      "letter": "Royal letter",
+      "popup_center": "Centre card",
+      "popup_sheet": "Bottom sheet",
+      "strip": "Strip",
+      "interstitial": "Full screen",
+      "coming_soon": "Coming soon"
+    },
+    "frame": {
+      "royal_gold": "Royal gold",
+      "festive_red": "Festive red",
+      "plain": "Plain"
+    },
+    "media": {
+      "photo": "Photo",
+      "video": "Video"
+    },
+    "trigger": {
+      "app_open": "When the app opens",
+      "screen_view": "When the screen opens",
+      "after_seconds": "After some seconds on the screen",
+      "first_sign_in": "First sign-in (new customers)",
+      "scroll_depth": "On scroll"
+    },
+    "frequency": {
+      "once": "once ever",
+      "daily": "once a day",
+      "session": "once per visit",
+      "every_hours": "every {{n}} hours",
+      "every_nth_open": "every {{n}}th app open"
+    },
+    "frequencyName": {
+      "once": "Once ever",
+      "daily": "Once a day",
+      "session": "Once per visit",
+      "every_hours": "Every N hours",
+      "every_nth_open": "Every Nth app open"
+    },
+    "segment": {
+      "all": "Everyone",
+      "new_signup": "New sign-ups",
+      "new": "Never ordered",
+      "repeat": "Has ordered before",
+      "inactive_30d": "No order in 30 days",
+      "has_cart": "Has items in the bag"
+    },
+    "section": {
+      "look": "Look and creative",
+      "message": "Message (English)",
+      "audience": "Who, where and how often"
+    },
+    "field": {
+      "format": "Kind",
+      "frame": "Frame",
+      "seal": "Seal colour",
+      "creative": "Photo or video",
+      "greeting": "Greeting",
+      "titleText": "Title",
+      "body": "Message",
+      "ctaLabel": "Button text",
+      "ctaRoute": "Button opens",
+      "trigger": "Show",
+      "seconds": "Seconds",
+      "frequency": "How often",
+      "hours": "Hours between",
+      "nthOpen": "Every Nth open",
+      "maxShows": "Most times per person",
+      "audience": "Who sees it",
+      "signupDays": "Signed up within (days)",
+      "screens": "Screens",
+      "city": "City",
+      "starts": "Starts",
+      "ends": "Ends",
+      "sponsored": "Paid placement (shows an \"Ad\" label)"
+    },
+    "placeholder": {
+      "greeting": "Dear Latur,"
+    },
+    "hint": {
+      "body": "2 to 4 short lines read best.",
+      "ctaRoute": "An app screen, such as /grocery or /store/haldirams. Leave empty for no button.",
+      "maxShows": "Leave empty for no limit.",
+      "screens": "Comma separated: home, food, grocery, shops, care, store, discover.",
+      "welcome": "Shown once, right after a new customer finishes the welcome step, to accounts made within the days above."
+    },
+    "upload": {
+      "hint": "Photo: 1080 x 1350 (4:5) or 1080 x 1080, JPG/PNG/WebP, up to 2 MB. Video: 1080 x 1350 MP4, up to 30 s and 15 MB.",
+      "working": "Checking and uploading…",
+      "ok": "{{type}} ready, {{w}} x {{h}}.",
+      "badType": "Use a JPG, PNG or WebP photo, or an MP4 video.",
+      "photoTooBig": "Photos can be at most 2 MB.",
+      "videoTooBig": "Videos can be at most 15 MB.",
+      "badShape": "This file is {{w}} x {{h}}. Use 4:5 (1080 x 1350) or square (1080 x 1080).",
+      "tooLong": "This video is {{s}} s long. The most is 30 s."
+    },
+    "preview": "How it looks on a phone",
+    "previewLetterOnly": "The preview shows royal letters. Other kinds look like the app's usual card.",
+    "previewNoMedia": "Your photo or video",
+    "previewTitle": "Your title",
+    "previewOpen": "Open",
+    "action": {
+      "submit": "Send for approval",
+      "approve": "Approve and go live",
+      "return": "Send back",
+      "end": "End now",
+      "results": "Results",
+      "copy": "Copy"
+    },
+    "confirm": {
+      "submit": {
+        "title": "Send for approval?",
+        "body": "After this it cannot be changed. Another admin must approve it."
+      },
+      "approve": {
+        "title": "Approve and go live?",
+        "body": "It starts showing in the customer app at its start date. You cannot approve a pop-up you made or sent."
+      },
+      "return": {
+        "title": "Send back to draft?",
+        "body": "The maker can change it and send it again. Say what to fix."
+      },
+      "end": {
+        "title": "End this pop-up now?",
+        "body": "It stops showing straight away and cannot be restarted. Use Copy to run it again."
+      }
+    },
+    "done": {
+      "submit": "Sent for approval.",
+      "approve": "Approved. It is live from its start date.",
+      "return": "Sent back to draft.",
+      "end": "Ended."
+    },
+    "results": {
+      "title": "Results: {{title}}",
+      "people": "People reached",
+      "shown": "Shown",
+      "tapped": "Button taps",
+      "closed": "Closed",
+      "day": "Day",
+      "none": "Not shown to anyone yet."
     }
   }
 }

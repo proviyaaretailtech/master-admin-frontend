@@ -160,6 +160,12 @@ export const NAV_SECTIONS: NavSection[] = [
         feature: { id: FEAT.ORDERS.id, action: FEAT.ORDERS.view },
       },
       {
+        id: "popups",
+        labelKey: "nav.items.popups",
+        path: "/popups",
+        feature: { id: FEAT.POPUPS.id, action: FEAT.POPUPS.view },
+      },
+      {
         id: "dispatch",
         labelKey: "nav.items.dispatch",
         path: "/dispatch",

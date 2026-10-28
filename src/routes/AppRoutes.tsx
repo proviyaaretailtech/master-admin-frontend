@@ -26,6 +26,7 @@ import { RoleSetsPage } from "../pages/master/RoleSetsPage";
 import { RidersPage } from "../pages/master/RidersPage";
 import { PartnerApplicationsPage } from "../pages/master/PartnerApplicationsPage";
 import { OrderHoldsPage } from "../pages/master/OrderHoldsPage";
+import { PopupsPage } from "../pages/master/PopupsPage";
 import { RiderPayPage } from "../pages/master/RiderPayPage";
 import { CommissionRulesPage } from "../pages/master/CommissionRulesPage";
 import { OrdersPage, Order360Page } from "../pages/master/OrdersPage";
@@ -616,6 +617,18 @@ export const AppRoutes: React.FC = () => {
                 featureNameKey="nav.feature.orderHolds"
               >
                 <OrderHoldsPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/popups"
+            element={
+              <PermissionRoute
+                featureId={FEAT.POPUPS.id}
+                actionKey={FEAT.POPUPS.view}
+                featureNameKey="nav.feature.popups"
+              >
+                <PopupsPage />
               </PermissionRoute>
             }
           />

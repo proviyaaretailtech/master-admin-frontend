@@ -26,6 +26,8 @@ export const FEAT = {
   RIDER_PAY: { id: "feat_rider_pay", view: "view_rider_pay", edit: "edit_rider_pay" },
   COMMISSION: { id: "feat_commission", view: "view_commission", edit: "edit_commission" },
   ORDERS: { id: "feat_orders", view: "view_orders", decideHolds: "decide_order_holds" },
+  /** Customer-app pop-ups; the One Local server also requires a platform super admin. */
+  POPUPS: { id: "feat_customer_popups", view: "view_popups", manage: "manage_popups" },
   PARTNER_REVIEW: {
     id: "feat_partner_review",
     view: "view_applications",
