@@ -52,7 +52,9 @@ export const CustomersPage: React.FC = () => {
               <div className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 {t(`m.customers.tile.${tile.key}`)}
               </div>
-              <div className="mt-1 text-2xl font-extrabold text-slate-900">{f.number(tile.value)}</div>
+              <div className="mt-1 text-2xl font-extrabold text-slate-900">
+                {f.number(tile.value)}
+              </div>
             </div>
           ))}
         </div>

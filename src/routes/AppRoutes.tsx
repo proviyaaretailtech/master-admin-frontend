@@ -21,6 +21,7 @@ import { Organization360OpsPage } from "../pages/master/Organization360OpsPage";
 import { ChangePlanPage } from "../pages/master/ChangePlanPage";
 import { InvitationsPage } from "../pages/master/InvitationsPage";
 import { CustomersPage } from "../pages/master/CustomersPage";
+import { SupportPage } from "../pages/master/SupportPage";
 import { RidersPage } from "../pages/master/RidersPage";
 import { PartnerApplicationsPage } from "../pages/master/PartnerApplicationsPage";
 import { OrderHoldsPage } from "../pages/master/OrderHoldsPage";
@@ -755,7 +756,18 @@ export const AppRoutes: React.FC = () => {
           <Route path="/fulfilment" element={<DomainPlaceholderPage />} />
           <Route path="/intelligence" element={<DomainPlaceholderPage />} />
           <Route path="/operations" element={<DomainPlaceholderPage />} />
-          <Route path="/support" element={<DomainPlaceholderPage />} />
+          <Route
+            path="/support"
+            element={
+              <PermissionRoute
+                featureId={FEAT.SUPPORT.id}
+                actionKey={FEAT.SUPPORT.view}
+                featureNameKey="nav.items.support"
+              >
+                <SupportPage />
+              </PermissionRoute>
+            }
+          />
           <Route path="/developer" element={<DomainPlaceholderPage />} />
           <Route path="/audit" element={<DomainPlaceholderPage />} />
         </Route>

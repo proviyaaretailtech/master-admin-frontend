@@ -157,7 +157,10 @@
     "reviewing": "Reviewing",
     "withdrawn": "Withdrawn",
     "held": "Held",
-    "released": "Released"
+    "released": "Released",
+    "open": "Open",
+    "in_progress": "In progress",
+    "test": "Test"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -2673,6 +2676,46 @@
         "ordered": "Real customers who ordered",
         "active30d": "Signed in, last 30 days",
         "test": "Test accounts"
+      }
+    },
+    "support": {
+      "title": "Support inbox",
+      "subtitle": "Customer and partner support requests in one list. Notes are internal: nothing is sent to anyone from here.",
+      "searchPlaceholder": "Message, reference or business",
+      "request": "Request",
+      "from": "From",
+      "source": {
+        "customer": "Customer",
+        "partner": "Partner"
+      },
+      "topic": "Topic",
+      "topicName": {
+        "order": "Order",
+        "payment": "Payment",
+        "profile": "Profile",
+        "other": "Other",
+        "orders": "Orders",
+        "payments": "Payments",
+        "inventory": "Inventory",
+        "account": "Account",
+        "feedback": "Feedback"
+      },
+      "business": "Business",
+      "raisedBy": "Raised by",
+      "received": "Received",
+      "assigned": "Assigned to",
+      "nobody": "Nobody yet",
+      "notes": "Internal notes",
+      "noNotes": "No notes yet.",
+      "note": "Note",
+      "take": "Take it",
+      "addNote": "Add note",
+      "resolve": "Resolve",
+      "reopen": "Reopen",
+      "empty": "No support requests here.",
+      "dialog": {
+        "note": "Add an internal note",
+        "resolve": "Resolve this request: what was done?"
       }
     }
   }
