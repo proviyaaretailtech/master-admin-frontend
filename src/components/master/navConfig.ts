@@ -102,6 +102,12 @@ export const NAV_SECTIONS: NavSection[] = [
         path: "/access-control/audit-logs",
         feature: { id: FEAT.AUDIT.id, action: FEAT.AUDIT.view },
       },
+      {
+        id: "customers",
+        labelKey: "nav.items.customers",
+        path: "/customers",
+        feature: { id: FEAT.CUSTOMERS.id, action: FEAT.CUSTOMERS.view },
+      },
     ],
   },
   {

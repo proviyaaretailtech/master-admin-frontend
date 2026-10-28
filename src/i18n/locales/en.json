@@ -374,7 +374,8 @@
       "cms": "CMS integration",
       "apiWebhooks": "API & webhooks",
       "partnerApplications": "Partner applications",
-      "orderHolds": "Held orders"
+      "orderHolds": "Held orders",
+      "customers": "Customers"
     },
     "feature": {
       "usersManagement": "Users Management",
@@ -2651,6 +2652,27 @@
       "done": {
         "release": "Released. The order is on its way to the restaurant.",
         "reject": "Rejected. The order was cancelled."
+      }
+    },
+    "customers": {
+      "title": "Customers",
+      "subtitle": "People using the One Local customer app. Email and phone are partly hidden.",
+      "searchPlaceholder": "Email or phone",
+      "accounts": "Accounts",
+      "accountsReal": "Real customers",
+      "accountsTest": "Test accounts",
+      "empty": "No customers yet.",
+      "contact": "Contact",
+      "orders": "Orders",
+      "lastOrder": "Last order",
+      "devices": "Devices",
+      "lastSignIn": "Last sign-in",
+      "joined": "Joined",
+      "tile": {
+        "real": "Customers",
+        "ordered": "Real customers who ordered",
+        "active30d": "Signed in, last 30 days",
+        "test": "Test accounts"
       }
     }
   }

@@ -20,6 +20,7 @@ import { OrganizationsPage } from "../pages/master/OrganizationsPage";
 import { Organization360OpsPage } from "../pages/master/Organization360OpsPage";
 import { ChangePlanPage } from "../pages/master/ChangePlanPage";
 import { InvitationsPage } from "../pages/master/InvitationsPage";
+import { CustomersPage } from "../pages/master/CustomersPage";
 import { RidersPage } from "../pages/master/RidersPage";
 import { PartnerApplicationsPage } from "../pages/master/PartnerApplicationsPage";
 import { OrderHoldsPage } from "../pages/master/OrderHoldsPage";
@@ -565,6 +566,18 @@ export const AppRoutes: React.FC = () => {
                 featureNameKey="nav.feature.invitations"
               >
                 <InvitationsPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/customers"
+            element={
+              <PermissionRoute
+                featureId={FEAT.CUSTOMERS.id}
+                actionKey={FEAT.CUSTOMERS.view}
+                featureNameKey="nav.items.customers"
+              >
+                <CustomersPage />
               </PermissionRoute>
             }
           />
