@@ -319,26 +319,26 @@ const LetterPreview: React.FC<{ draft: PopupDraft }> = ({ draft }) => {
   const { t } = useTranslation();
   const c = draft.content.en;
   const style = draft.frame?.style ?? "royal_gold";
-  const tagColor = draft.frame?.seal ?? (style === "festive_red" ? "#9C2A2A" : "#174D37");
   const tag = style === "plain" ? null : draft.is_sponsored ? t("popupsAdmin.previewAd") : (c.greeting || "").replace(/[,]\s*$/, "") || null;
   const ratio = draft.media ? draft.media.width / draft.media.height : 0.8;
   const media = useMemo(() => draft.media, [draft.media]);
+  // A button shows when it has words or a destination (same rule as the app); with no destination it only closes the card.
+  const button = c.cta_label || c.cta_route ? c.cta_label || t("popupsAdmin.previewOpen") : null;
   if (draft.format !== "letter") return <p className="rounded-xl bg-slate-50 p-4 text-[11px] text-slate-500">{t("popupsAdmin.previewLetterOnly")}</p>;
+  // Same look as the app's campaign card: the picture is the card, words on a dark fade, label top left, close top right.
   return (
     <div className="flex justify-center rounded-3xl bg-slate-800/80 p-4">
-      <div className="relative w-[260px] overflow-hidden rounded-[22px] bg-white shadow-2xl">
-        <div className="relative w-full bg-slate-100" style={{ aspectRatio: String(ratio) }}>
-          {media?.type === "photo" && <img src={media.key} alt="" className="h-full w-full object-cover" />}
-          {media?.type === "video" && <video src={media.key} poster={media.poster_key} muted loop autoPlay playsInline className="h-full w-full object-cover" />}
-          {!media && <div className="flex h-full items-center justify-center text-[10px] text-slate-400">{t("popupsAdmin.previewNoMedia")}</div>}
-          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-white/0 to-white/90" />
-          <div className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-[11px] text-slate-900 shadow">✕</div>
-        </div>
-        <div className="flex flex-col gap-1.5 px-4 pb-4 pt-1.5">
-          {tag && <span className="inline-flex w-fit items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ color: tagColor, background: `${tagColor}14` }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: tagColor }} />{tag}</span>}
-          <p className="text-[18px] font-extrabold leading-tight tracking-tight text-[#0B1F16]">{c.title || t("popupsAdmin.previewTitle")}</p>
-          {c.body && <p className="text-[11px] leading-snug text-[#5E6B63]">{c.body}</p>}
-          {c.cta_route && <span className="mt-1 rounded-full bg-[#B3F400] py-2 text-center text-[12px] font-extrabold text-[#0B1F16]">{c.cta_label || t("popupsAdmin.previewOpen")} →</span>}
+      <div className="relative w-[260px] overflow-hidden rounded-[22px] bg-[#1C241F] shadow-2xl" style={{ aspectRatio: String(ratio) }}>
+        {media?.type === "photo" && <img src={media.key} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+        {media?.type === "video" && <video src={media.key} poster={media.poster_key} muted loop autoPlay playsInline className="absolute inset-0 h-full w-full object-cover" />}
+        {!media && <div className="absolute inset-0 flex items-center justify-center text-[10px] text-slate-400">{t("popupsAdmin.previewNoMedia")}</div>}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/30 to-black/80" />
+        {tag && <span className="absolute left-3 top-3 max-w-[70%] truncate rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-bold text-white">{tag}</span>}
+        <div className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-[11px] text-slate-900">✕</div>
+        <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3.5">
+          <p className="text-[20px] font-extrabold leading-tight tracking-tight text-white">{c.title || t("popupsAdmin.previewTitle")}</p>
+          {c.body && <p className="text-[11px] leading-snug text-white/85">{c.body}</p>}
+          {button && <span className="mt-2 rounded-full bg-[#B3F400] py-2.5 text-center text-[12px] font-extrabold text-[#0B1F16]">{button}</span>}
         </div>
       </div>
     </div>
