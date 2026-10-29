@@ -6,6 +6,7 @@ import { authApi } from "../api";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { LanguageRadioGroup } from "../components/i18n/LanguageRadioGroup";
 import { localizeError } from "../i18n/errors";
+import { ApiError, isApiError } from "../lib/api-error";
 
 export const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,9 @@ export const LoginPage: React.FC = () => {
     null
   );
   const [hasError, setHasError] = useState(false);
-  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
+  // True only when the server rejected the email/password (401). Server or network failures are not
+  // the person's fault, so the fields are not marked wrong. There is no server-side attempt limit.
+  const [credentialsRejected, setCredentialsRejected] = useState(false);
 
   const { t } = useTranslation();
   const { login, notice } = useAuth();
@@ -57,6 +60,7 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setLoginError(null);
     setHasError(false);
+    setCredentialsRejected(false);
     setLoading(true);
 
     console.log("[LoginPage] Sending user login API request to backend for:", email);
@@ -68,8 +72,12 @@ export const LoginPage: React.FC = () => {
       if (error) {
         console.error("[LoginPage] Login failed:", error.message);
         setHasError(true);
-        setLoginError({ error, fallbackKey: "auth.invalidCredentials" });
-        setRemainingAttempts((prev) => (prev === null ? 2 : Math.max(0, prev - 1)));
+        const rejected = isApiError(error) && (error as ApiError).status === 401;
+        setCredentialsRejected(rejected);
+        setLoginError({
+          error,
+          fallbackKey: rejected ? "auth.invalidCredentials" : "auth.unexpected",
+        });
       } else {
         console.log("[LoginPage] Logged in successfully:", user);
         navigate("/");
@@ -218,7 +226,7 @@ export const LoginPage: React.FC = () => {
                 placeholder="admin@proviyaa.com"
                 required
                 className={`w-full px-3.5 py-2.5 text-sm rounded-xl border transition-colors outline-none placeholder:text-slate-400 ${
-                  hasError
+                  hasError && credentialsRejected
                     ? "border-[#FEB2B2] bg-[#FFF5F5]/30 focus:border-[#E53E3E] focus:ring-1 focus:ring-[#E53E3E]"
                     : "border-slate-200 focus:border-[#65D000] focus:ring-2 focus:ring-[#65D000]/20"
                 }`}
@@ -250,14 +258,14 @@ export const LoginPage: React.FC = () => {
                 placeholder="••••••••"
                 required
                 className={`w-full px-3.5 py-2.5 text-sm rounded-xl border transition-colors outline-none placeholder:text-slate-400 ${
-                  hasError
+                  hasError && credentialsRejected
                     ? "border-[#FEB2B2] bg-[#FFF5F5]/30 focus:border-[#E53E3E] focus:ring-1 focus:ring-[#E53E3E]"
                     : "border-slate-200 focus:border-[#65D000] focus:ring-2 focus:ring-[#65D000]/20"
                 }`}
               />
-              {hasError && remainingAttempts !== null && (
+              {hasError && credentialsRejected && (
                 <p className="mt-1.5 text-xs text-[#E53E3E] font-medium">
-                  {t("auth.attemptsRemaining", { count: remainingAttempts })}
+                  {t("auth.passwordRejected")}
                 </p>
               )}
             </div>
