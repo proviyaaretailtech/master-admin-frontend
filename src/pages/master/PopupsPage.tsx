@@ -18,11 +18,6 @@ import type { FrameStyle, Popup, PopupDraft, PopupResults, PopupStatus } from ".
 
 const STATUSES: Array<PopupStatus | "all"> = ["all", "draft", "submitted", "live", "ended"];
 const SEALS = ["#9C2A2A", "#174D37", "#1F3A93", "#B8892B"];
-const LOOK: Record<FrameStyle, { paper: string; line: string; accent: string; ink: string; soft: string }> = {
-  royal_gold: { paper: "linear-gradient(#FFFBF0,#F5EAD0)", line: "#B8892B", accent: "#C9A04A", ink: "#2B2116", soft: "#6B5A43" },
-  festive_red: { paper: "linear-gradient(#FFF8EE,#FBE7D3)", line: "#9C2A2A", accent: "#C9A04A", ink: "#2E1712", soft: "#6E4A3E" },
-  plain: { paper: "linear-gradient(#FFFFFF,#FAF8F3)", line: "#D9CBA6", accent: "#B8A57A", ink: "#1F1F1F", soft: "#6B6B6B" },
-};
 
 const isoLocal = (d: Date) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 const withOffset = (local: string) => {
@@ -318,34 +313,33 @@ const PopupEditor: React.FC<{ initial: PopupDraft; id?: string; onClose: () => v
   );
 };
 
-/* ------------------------------------------------------------------ preview (a look-alike of the app's LetterPopup) */
+/* ------------------------------------------------------------------ preview (a look-alike of the app's campaign card) */
 
 const LetterPreview: React.FC<{ draft: PopupDraft }> = ({ draft }) => {
   const { t } = useTranslation();
-  const look = LOOK[draft.frame?.style ?? "royal_gold"];
   const c = draft.content.en;
+  const style = draft.frame?.style ?? "royal_gold";
+  const tagColor = draft.frame?.seal ?? (style === "festive_red" ? "#9C2A2A" : "#174D37");
+  const tag = style === "plain" ? null : draft.is_sponsored ? t("popupsAdmin.previewAd") : (c.greeting || "").replace(/[,]\s*$/, "") || null;
   const ratio = draft.media ? draft.media.width / draft.media.height : 0.8;
   const media = useMemo(() => draft.media, [draft.media]);
   if (draft.format !== "letter") return <p className="rounded-xl bg-slate-50 p-4 text-[11px] text-slate-500">{t("popupsAdmin.previewLetterOnly")}</p>;
   return (
     <div className="flex justify-center rounded-3xl bg-slate-800/80 p-4">
-      <div className="relative w-[260px] rounded-[16px] p-[18px] pb-9 shadow-2xl" style={{ background: look.paper }}>
-        <div className="pointer-events-none absolute inset-[6px] rounded-[11px] border-[1.5px]" style={{ borderColor: look.line }} />
-        {draft.frame?.style !== "plain" && <div className="pointer-events-none absolute inset-[11px] rounded-[7px] border" style={{ borderColor: look.accent }} />}
-        <div className="absolute right-4 top-4 flex h-6 w-6 items-center justify-center rounded-full border bg-white/85 text-[11px]" style={{ borderColor: look.line, color: look.ink }}>✕</div>
-        <div className="relative flex flex-col items-center gap-1.5 pt-2 text-center">
-          <div className="w-full overflow-hidden rounded-[8px] border bg-slate-100" style={{ borderColor: look.accent, aspectRatio: String(ratio) }}>
-            {media?.type === "photo" && <img src={media.key} alt="" className="h-full w-full object-cover" />}
-            {media?.type === "video" && <video src={media.key} poster={media.poster_key} muted loop autoPlay playsInline className="h-full w-full object-cover" />}
-            {!media && <div className="flex h-full items-center justify-center text-[10px] text-slate-400">{t("popupsAdmin.previewNoMedia")}</div>}
-          </div>
-          {c.greeting && <p className="mt-1 font-serif text-[12px] italic" style={{ color: look.soft }}>{c.greeting}</p>}
-          <p className="font-serif text-[17px] font-bold leading-tight" style={{ color: look.ink }}>{c.title || t("popupsAdmin.previewTitle")}</p>
-          {c.body && <p className="text-[11px] leading-snug" style={{ color: look.soft }}>{c.body}</p>}
-          {c.cta_route && <span className="mt-1 rounded-full border px-4 py-1.5 text-[11px] font-bold" style={{ background: look.ink, borderColor: look.accent, color: "#F7E7B4" }}>{c.cta_label || t("popupsAdmin.previewOpen")} →</span>}
+      <div className="relative w-[260px] overflow-hidden rounded-[22px] bg-white shadow-2xl">
+        <div className="relative w-full bg-slate-100" style={{ aspectRatio: String(ratio) }}>
+          {media?.type === "photo" && <img src={media.key} alt="" className="h-full w-full object-cover" />}
+          {media?.type === "video" && <video src={media.key} poster={media.poster_key} muted loop autoPlay playsInline className="h-full w-full object-cover" />}
+          {!media && <div className="flex h-full items-center justify-center text-[10px] text-slate-400">{t("popupsAdmin.previewNoMedia")}</div>}
+          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-b from-white/0 to-white/90" />
+          <div className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-[11px] text-slate-900 shadow">✕</div>
         </div>
-        <div className="absolute -bottom-0 left-1/2 flex h-9 w-9 -translate-x-1/2 translate-y-1/3 items-center justify-center rounded-full text-sm font-black text-[#F7E7B4] shadow"
-          style={{ background: `radial-gradient(circle at 40% 35%, rgba(255,255,255,0.3), ${draft.frame?.seal ?? SEALS[0]} 55%)` }}>1</div>
+        <div className="flex flex-col gap-1.5 px-4 pb-4 pt-1.5">
+          {tag && <span className="inline-flex w-fit items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ color: tagColor, background: `${tagColor}14` }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: tagColor }} />{tag}</span>}
+          <p className="text-[18px] font-extrabold leading-tight tracking-tight text-[#0B1F16]">{c.title || t("popupsAdmin.previewTitle")}</p>
+          {c.body && <p className="text-[11px] leading-snug text-[#5E6B63]">{c.body}</p>}
+          {c.cta_route && <span className="mt-1 rounded-full bg-[#B3F400] py-2 text-center text-[12px] font-extrabold text-[#0B1F16]">{c.cta_label || t("popupsAdmin.previewOpen")} →</span>}
+        </div>
       </div>
     </div>
   );

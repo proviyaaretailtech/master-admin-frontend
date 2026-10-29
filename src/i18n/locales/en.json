@@ -2775,7 +2775,7 @@
       "status": "Status"
     },
     "format": {
-      "letter": "Royal letter",
+      "letter": "Campaign card",
       "popup_center": "Centre card",
       "popup_sheet": "Bottom sheet",
       "strip": "Strip",
@@ -2783,9 +2783,9 @@
       "coming_soon": "Coming soon"
     },
     "frame": {
-      "royal_gold": "Royal gold",
-      "festive_red": "Festive red",
-      "plain": "Plain"
+      "royal_gold": "Classic (green label)",
+      "festive_red": "Festive (red label)",
+      "plain": "No label"
     },
     "media": {
       "photo": "Photo",
@@ -2827,10 +2827,10 @@
     },
     "field": {
       "format": "Kind",
-      "frame": "Frame",
-      "seal": "Seal colour",
+      "frame": "Label style",
+      "seal": "Label colour",
       "creative": "Photo or video",
-      "greeting": "Greeting",
+      "greeting": "Label text",
       "titleText": "Title",
       "body": "Message",
       "ctaLabel": "Button text",
@@ -2850,7 +2850,7 @@
       "sponsored": "Paid placement (shows an \"Ad\" label)"
     },
     "placeholder": {
-      "greeting": "Dear Latur,"
+      "greeting": "Dear Latur"
     },
     "hint": {
       "body": "2 to 4 short lines read best.",
@@ -2870,7 +2870,7 @@
       "tooLong": "This video is {{s}} s long. The most is 30 s."
     },
     "preview": "How it looks on a phone",
-    "previewLetterOnly": "The preview shows royal letters. Other kinds look like the app's usual card.",
+    "previewLetterOnly": "The preview shows campaign cards. Other kinds look like the app's usual card.",
     "previewNoMedia": "Your photo or video",
     "previewTitle": "Your title",
     "previewOpen": "Open",
@@ -2914,6 +2914,7 @@
       "closed": "Closed",
       "day": "Day",
       "none": "Not shown to anyone yet."
-    }
+    },
+    "previewAd": "Ad"
   }
 }
