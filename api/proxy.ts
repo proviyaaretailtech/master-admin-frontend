@@ -1,5 +1,5 @@
 // Vercel function behind the /_s/* rewrite (vercel.json): the panel's only way to the Master server.
-import { clientIpFromVercel, proxyToMaster } from "../src/bff/master-proxy";
+import { clientIpFromVercel, proxyToMaster } from "../src/bff/master-proxy.js";
 
 const handle = (request: Request): Promise<Response> =>
   proxyToMaster(
