@@ -1,19 +1,13 @@
-import axios from "axios";
-import { getAccessToken } from "../lib/session";
+import { apiClient } from "../lib/api-client";
+import { isApiError } from "../lib/api-error";
 
 /**
  * Marketing pop-ups for the One Local customer app (specs/marketing-popups/plan.md).
- * These live on the One Local server (its /api/admin/popups), not on the Master backend: the One Local server owns
- * ol_popups and checks that the caller is a platform super admin with the same sign-in token Master already holds.
+ * They live on the One Local server (ol_popups), but this page only ever talks to the Master server:
+ * Master checks the permission, forwards the staff member's session to One Local server to server,
+ * and audits each change. The browser never calls One Local directly.
  */
-const ONE_LOCAL_API = import.meta.env.VITE_ONELOCAL_API_URL || "http://localhost:8081/api";
-
-const ol = axios.create({ baseURL: `${ONE_LOCAL_API}/admin`, headers: { "Content-Type": "application/json" } });
-ol.interceptors.request.use((config) => {
-  const token = getAccessToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+const ol = apiClient;
 
 export type PopupStatus = "draft" | "submitted" | "approved" | "live" | "ended";
 export type PopupFormat = "letter" | "popup_center" | "popup_sheet" | "strip";
@@ -69,14 +63,10 @@ export interface PopupResults {
   days: Array<{ day: string; impression: number; tap: number; close: number }>;
 }
 
-/** The One Local server's own message (detail) when it refuses, so the page can show it as is. */
+/** The server's own sentence when it refuses (One Local's reason is passed on by Master), so the page can show it as is. */
 export function popupError(e: unknown): string {
-  if (axios.isAxiosError(e)) {
-    const d = e.response?.data as { detail?: string } | undefined;
-    if (d?.detail) return d.detail;
-    if (!e.response) return "The One Local server cannot be reached.";
-  }
-  return e instanceof Error ? e.message : "Something went wrong.";
+  if (isApiError(e) && e.isNetworkError) return "The Master server cannot be reached.";
+  return e instanceof Error && e.message ? e.message : "Something went wrong.";
 }
 
 export const popupApi = {
@@ -90,8 +80,7 @@ export const popupApi = {
 
   /** Upload a photo or MP4 into the pop-ups folder; returns its public address. */
   async upload(file: Blob, filename: string): Promise<string> {
-    const { data } = await ol.post<{ upload_url: string; public_url: string; headers: Record<string, string> }>("/media/upload-url", {
-      folder: "popups",
+    const { data } = await ol.post<{ upload_url: string; public_url: string; headers: Record<string, string> }>("/popups/media/upload-url", {
       content_type: file.type,
       filename,
       size: file.size,
